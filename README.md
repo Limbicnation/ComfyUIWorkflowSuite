@@ -1,4 +1,4 @@
-# ComfyUIStreamScape
+# ComfyUIWorkflowSuite
 Streamlined ComfyUI workflows
 
 ## Installation
