@@ -1,20 +1,20 @@
 {
-  "last_node_id": 508,
-  "last_link_id": 929,
+  "last_node_id": 514,
+  "last_link_id": 935,
   "nodes": [
     {
       "id": 466,
       "type": "Anything Everywhere",
       "pos": [
-        319.90812372334534,
-        -86.9018096044602
+        599.1943206471733,
+        -72.61981839352269
       ],
       "size": {
         "0": 210,
         "1": 26
       },
       "flags": {},
-      "order": 22,
+      "order": 25,
       "mode": 0,
       "inputs": [
         {
@@ -36,15 +36,15 @@
       "id": 465,
       "type": "Anything Everywhere",
       "pos": [
-        319.90812372334534,
-        -226.90180960446165
+        599.1943206471733,
+        -212.61981839352413
       ],
       "size": {
         "0": 210,
         "1": 26
       },
       "flags": {},
-      "order": 23,
+      "order": 27,
       "mode": 0,
       "inputs": [
         {
@@ -66,15 +66,15 @@
       "id": 354,
       "type": "VHS_SplitImages",
       "pos": [
-        3484.052937945818,
-        1166.0498437901333
+        3549.148302367693,
+        1155.7910832588832
       ],
       "size": {
         "0": 220,
         "1": 120
       },
       "flags": {},
-      "order": 34,
+      "order": 37,
       "mode": 0,
       "inputs": [
         {
@@ -127,15 +127,15 @@
       "id": 487,
       "type": "ImageScaleToTotalPixels",
       "pos": [
-        -250.6997924804688,
-        499.99999928474415
+        -54.32100039062494,
+        536.2050002002717
       ],
       "size": {
         "0": 210,
         "1": 82
       },
       "flags": {},
-      "order": 31,
+      "order": 34,
       "mode": 0,
       "inputs": [
         {
@@ -169,15 +169,15 @@
       "id": 482,
       "type": "Anything Everywhere?",
       "pos": [
-        -250.6997924804688,
-        639.9999992847443
+        -54.32100039062494,
+        676.2050002002717
       ],
       "size": {
         "0": 210,
         "1": 82
       },
       "flags": {},
-      "order": 33,
+      "order": 36,
       "mode": 0,
       "inputs": [
         {
@@ -200,38 +200,11 @@
       "bgcolor": "#2e3bc9"
     },
     {
-      "id": 436,
-      "type": "PreviewImage",
-      "pos": [
-        2600,
-        80
-      ],
-      "size": {
-        "0": 820.0277099609375,
-        "1": 511.5301818847656
-      },
-      "flags": {},
-      "order": 28,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 841
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PreviewImage"
-      },
-      "color": "#222",
-      "bgcolor": "#000"
-    },
-    {
       "id": 454,
       "type": "Note Plus (mtb)",
       "pos": {
-        "0": 2618,
-        "1": 604,
+        "0": 2913.751953125,
+        "1": 621.9110107421875,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -265,8 +238,8 @@
       "id": 451,
       "type": "Note Plus (mtb)",
       "pos": {
-        "0": 1370,
-        "1": 370,
+        "0": 1652.406982421875,
+        "1": 399.7130432128906,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -300,15 +273,15 @@
       "id": 475,
       "type": "ImpactMakeImageBatch",
       "pos": [
-        -252.6997924804688,
-        340.9999992847442
+        -56.32100039062494,
+        377.2050002002715
       ],
       "size": {
         "0": 140,
         "1": 110
       },
       "flags": {},
-      "order": 27,
+      "order": 30,
       "mode": 0,
       "inputs": [
         {
@@ -358,15 +331,15 @@
       "id": 484,
       "type": "Anything Everywhere3",
       "pos": [
-        390,
-        90
+        672.4069636180357,
+        119.71294434880379
       ],
       "size": {
         "0": 180,
         "1": 70
       },
       "flags": {},
-      "order": 25,
+      "order": 28,
       "mode": 0,
       "inputs": [
         {
@@ -400,8 +373,8 @@
       "id": 445,
       "type": "Note Plus (mtb)",
       "pos": {
-        "0": 10,
-        "1": 340,
+        "0": 292.406982421875,
+        "1": 369.7130432128906,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -435,8 +408,8 @@
       "id": 447,
       "type": "Note Plus (mtb)",
       "pos": {
-        "0": 580,
-        "1": 70,
+        "0": 862.406982421875,
+        "1": 99.71293640136719,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -467,48 +440,11 @@
       "shape": 1
     },
     {
-      "id": 455,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": 1370,
-        "1": -120,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": {
-        "0": 540,
-        "1": 330
-      },
-      "flags": {
-        "pinned": false
-      },
-      "order": 4,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
-      "widgets_values": [
-        "## Understanding the settings\n\n<br>\nThere are 3 main settings:\n\n<br>\n\n- Key frame position\n- Length of influence\n- Strength of influence\n\n<br>\n\nThe type_of fields decide whether each of settings are the same for each frame or different.\n\n<br>\n\nWhen the type has been set to 'linear', you can adjust the value for every in with the _value fields.\n\n<br>\n\nWhen the type is set to 'dynamic', the text box below each setting are for the individual values - follow the format provided to set values for each frame.\n",
-        "markdown",
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
-    },
-    {
       "id": 453,
       "type": "Note Plus (mtb)",
       "pos": {
-        "0": 1370,
-        "1": 690,
+        "0": 1652.406982421875,
+        "1": 719.712890625,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -523,7 +459,7 @@
         "1": 130
       },
       "flags": {},
-      "order": 5,
+      "order": 4,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -542,8 +478,8 @@
       "id": 452,
       "type": "Note Plus (mtb)",
       "pos": {
-        "0": 1370,
-        "1": 530,
+        "0": 1652.406982421875,
+        "1": 559.712890625,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -558,7 +494,7 @@
         "1": 110
       },
       "flags": {},
-      "order": 6,
+      "order": 5,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -577,15 +513,15 @@
       "id": 370,
       "type": "CLIPVisionLoader",
       "pos": [
-        9.908123723345597,
-        -86.9018096044602
+        289.19432064717387,
+        -72.61981839352269
       ],
       "size": {
         "0": 300,
         "1": 60
       },
       "flags": {},
-      "order": 7,
+      "order": 6,
       "mode": 0,
       "outputs": [
         {
@@ -609,47 +545,11 @@
       "shape": 4
     },
     {
-      "id": 469,
-      "type": "Prompts Everywhere",
-      "pos": [
-        2407,
-        96
-      ],
-      "size": {
-        "0": 180,
-        "1": 50
-      },
-      "flags": {},
-      "order": 29,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "*",
-          "link": 865,
-          "color_on": "#FFA931"
-        },
-        {
-          "name": "CONDITIONING",
-          "type": "*",
-          "link": 866,
-          "color_on": "#FFA931"
-        }
-      ],
-      "properties": {
-        "group_restricted": false,
-        "color_restricted": false,
-        "Node name for S&R": "Prompts Everywhere"
-      },
-      "color": "#998119",
-      "bgcolor": "#856d05"
-    },
-    {
       "id": 352,
       "type": "CLIPTextEncode",
       "pos": [
-        810,
-        730
+        1092.4069636180354,
+        759.7129443488038
       ],
       "size": {
         "0": 540,
@@ -658,7 +558,7 @@
       "flags": {
         "pinned": false
       },
-      "order": 8,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
@@ -688,87 +588,11 @@
       "bgcolor": "#533"
     },
     {
-      "id": 369,
-      "type": "IPAdapterModelLoader",
-      "pos": [
-        10,
-        -230
-      ],
-      "size": {
-        "0": 300,
-        "1": 60
-      },
-      "flags": {},
-      "order": 9,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "IPADAPTER",
-          "type": "IPADAPTER",
-          "links": [
-            861
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "IPAdapterModelLoader"
-      },
-      "widgets_values": [
-        "ip-adapter-plus_sd15.bin"
-      ],
-      "color": "#323",
-      "bgcolor": "#535",
-      "shape": 4
-    },
-    {
-      "id": 462,
-      "type": "LoadImage",
-      "pos": [
-        -971,
-        440
-      ],
-      "size": {
-        "0": 320,
-        "1": 314
-      },
-      "flags": {},
-      "order": 10,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            882
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoadImage"
-      },
-      "widgets_values": [
-        "2023-12-22_01-36-26_2036.png",
-        "image"
-      ],
-      "color": "#424fdd",
-      "bgcolor": "#2e3bc9"
-    },
-    {
       "id": 450,
       "type": "Note Plus (mtb)",
       "pos": {
-        "0": 1378,
-        "1": 226,
+        "0": 1660.406982421875,
+        "1": 255.71292114257812,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -783,7 +607,7 @@
         "1": 130
       },
       "flags": {},
-      "order": 11,
+      "order": 8,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -799,126 +623,18 @@
       "shape": 1
     },
     {
-      "id": 367,
-      "type": "BatchPromptSchedule",
-      "pos": [
-        807.6339871162926,
-        74.22876530558679
-      ],
-      "size": {
-        "0": 540,
-        "1": 600
-      },
-      "flags": {},
-      "order": 12,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "POS",
-          "type": "CONDITIONING",
-          "links": [
-            821
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "NEG",
-          "type": "CONDITIONING",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "BatchPromptSchedule"
-      },
-      "widgets_values": [
-        "\"0\" :\"\",\n\"4\" :\"\",\n\"20\" :\"\",\n\"36\" :\"\",\n\"52\" :\"\",\n\"68\" :\"\",\n\"120\" :\"\"",
-        120,
-        false,
-        "",
-        "",
-        0,
-        0,
-        0,
-        0,
-        0.2
-      ],
-      "color": "#232",
-      "bgcolor": "#353"
-    },
-    {
-      "id": 480,
-      "type": "CheckpointLoaderSimpleWithNoiseSelect",
-      "pos": [
-        10,
-        90
-      ],
-      "size": {
-        "0": 370,
-        "1": 122
-      },
-      "flags": {},
-      "order": 13,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            897
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "CLIP",
-          "type": "CLIP",
-          "links": [
-            898
-          ],
-          "shape": 3,
-          "slot_index": 1
-        },
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": [],
-          "shape": 3,
-          "slot_index": 2
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CheckpointLoaderSimpleWithNoiseSelect"
-      },
-      "widgets_values": [
-        "v1-5-pruned-emaonly.safetensors",
-        "sqrt_linear (AnimateDiff)"
-      ],
-      "color": "#323",
-      "bgcolor": "#535",
-      "shape": 4
-    },
-    {
       "id": 490,
       "type": "VAELoader",
       "pos": [
-        10,
-        270
+        292.40696361803566,
+        299.71294434880383
       ],
       "size": {
         "0": 370,
         "1": 60
       },
       "flags": {},
-      "order": 14,
+      "order": 9,
       "mode": 0,
       "outputs": [
         {
@@ -944,15 +660,15 @@
       "id": 458,
       "type": "LoadImage",
       "pos": [
-        -970,
-        91
+        -773.6212079101562,
+        127.20500091552735
       ],
       "size": {
         "0": 320,
         "1": 314
       },
       "flags": {},
-      "order": 15,
+      "order": 10,
       "mode": 0,
       "outputs": [
         {
@@ -975,48 +691,7 @@
         "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
-        "2023-12-22_02-35-40_1054.png",
-        "image"
-      ],
-      "color": "#424fdd",
-      "bgcolor": "#2e3bc9"
-    },
-    {
-      "id": 464,
-      "type": "LoadImage",
-      "pos": [
-        -631,
-        440
-      ],
-      "size": {
-        "0": 320,
-        "1": 314
-      },
-      "flags": {},
-      "order": 16,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            883
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoadImage"
-      },
-      "widgets_values": [
-        "2023-12-22_02-34-49_4552.png",
+        "2023-10-25_01-51-36_6462.png",
         "image"
       ],
       "color": "#424fdd",
@@ -1034,7 +709,7 @@
         "1": 110
       },
       "flags": {},
-      "order": 17,
+      "order": 11,
       "mode": 0,
       "outputs": [
         {
@@ -1078,7 +753,7 @@
         "1": 120
       },
       "flags": {},
-      "order": 18,
+      "order": 12,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -1092,70 +767,6 @@
       "color": "#223",
       "bgcolor": "#335",
       "shape": 1
-    },
-    {
-      "id": 187,
-      "type": "ADE_AnimateDiffLoaderWithContext",
-      "pos": [
-        2548,
-        887
-      ],
-      "size": {
-        "0": 360,
-        "1": 190
-      },
-      "flags": {
-        "pinned": false
-      },
-      "order": 30,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 854,
-          "slot_index": 0
-        },
-        {
-          "name": "context_options",
-          "type": "CONTEXT_OPTIONS",
-          "link": 627,
-          "slot_index": 1
-        },
-        {
-          "name": "motion_lora",
-          "type": "MOTION_LORA",
-          "link": null
-        },
-        {
-          "name": "motion_model_settings",
-          "type": "MOTION_MODEL_SETTINGS",
-          "link": null,
-          "slot_index": 3
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            815
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ADE_AnimateDiffLoaderWithContext"
-      },
-      "widgets_values": [
-        "mm_sd_v15_v2.ckpt",
-        "sqrt_linear (AnimateDiff)",
-        0.9,
-        true
-      ],
-      "color": "#7f65b0",
-      "bgcolor": "#6b519c"
     },
     {
       "id": 446,
@@ -1177,7 +788,7 @@
         "1": 130
       },
       "flags": {},
-      "order": 19,
+      "order": 13,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -1233,59 +844,56 @@
       ]
     },
     {
-      "id": 463,
-      "type": "LoadImage",
+      "id": 342,
+      "type": "ADE_AnimateDiffUniformContextOptions",
       "pos": [
-        -630,
-        91
+        2137,
+        933
       ],
       "size": {
-        "0": 320,
-        "1": 314
+        "0": 270,
+        "1": 154
       },
       "flags": {},
-      "order": 20,
+      "order": 14,
       "mode": 0,
       "outputs": [
         {
-          "name": "IMAGE",
-          "type": "IMAGE",
+          "name": "CONTEXT_OPTIONS",
+          "type": "CONTEXT_OPTIONS",
           "links": [
-            879
+            627
           ],
           "shape": 3,
           "slot_index": 0
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null,
-          "shape": 3
         }
       ],
       "properties": {
-        "Node name for S&R": "LoadImage"
+        "Node name for S&R": "ADE_AnimateDiffUniformContextOptions"
       },
       "widgets_values": [
-        "2023-12-22_01-36-38_5377 (1).png",
-        "image"
+        16,
+        2,
+        2,
+        "uniform",
+        false
       ],
-      "color": "#424fdd",
-      "bgcolor": "#2e3bc9"
+      "color": "#232",
+      "bgcolor": "#353"
     },
     {
       "id": 292,
       "type": "STMFNet VFI",
       "pos": [
-        3803,
-        1165
+        3868.095364421875,
+        1154.7412394687499
       ],
       "size": {
         "0": 343.60247802734375,
         "1": 150
       },
       "flags": {},
-      "order": 35,
+      "order": 38,
       "mode": 0,
       "inputs": [
         {
@@ -1304,7 +912,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            656
+            931
           ],
           "shape": 3,
           "slot_index": 0
@@ -1323,11 +931,98 @@
       "bgcolor": "#2e3bc9"
     },
     {
+      "id": 369,
+      "type": "IPAdapterModelLoader",
+      "pos": [
+        289.2861969238283,
+        -215.71800878906248
+      ],
+      "size": {
+        "0": 300,
+        "1": 60
+      },
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IPADAPTER",
+          "type": "IPADAPTER",
+          "links": [
+            861
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "IPAdapterModelLoader"
+      },
+      "widgets_values": [
+        "ip-adapter-plus_sd15.bin"
+      ],
+      "color": "#323",
+      "bgcolor": "#535",
+      "shape": 4
+    },
+    {
+      "id": 480,
+      "type": "CheckpointLoaderSimpleWithNoiseSelect",
+      "pos": [
+        292.40696361803566,
+        119.71294434880379
+      ],
+      "size": {
+        "0": 370,
+        "1": 122
+      },
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            897
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            898
+          ],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [],
+          "shape": 3,
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CheckpointLoaderSimpleWithNoiseSelect"
+      },
+      "widgets_values": [
+        "v1-5-pruned-emaonly.safetensors",
+        "sqrt_linear (AnimateDiff)"
+      ],
+      "color": "#323",
+      "bgcolor": "#535",
+      "shape": 4
+    },
+    {
       "id": 437,
       "type": "BatchCreativeInterpolation",
       "pos": [
-        1933,
-        66
+        2215.4069636180357,
+        95.71294434880379
       ],
       "size": {
         "0": 450,
@@ -1336,7 +1031,7 @@
       "flags": {
         "pinned": false
       },
-      "order": 24,
+      "order": 29,
       "mode": 0,
       "inputs": [
         {
@@ -1383,9 +1078,7 @@
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "links": [
-            865
-          ],
+          "links": [],
           "shape": 3,
           "slot_index": 1
         },
@@ -1432,42 +1125,444 @@
       "bgcolor": "#335"
     },
     {
-      "id": 342,
-      "type": "ADE_AnimateDiffUniformContextOptions",
+      "id": 462,
+      "type": "LoadImage",
       "pos": [
-        2137,
-        933
+        -774.6212079101562,
+        476.2050009155273
       ],
       "size": {
-        "0": 270,
-        "1": 154
+        "0": 320,
+        "1": 314
       },
       "flags": {},
-      "order": 21,
+      "order": 17,
       "mode": 0,
       "outputs": [
         {
-          "name": "CONTEXT_OPTIONS",
-          "type": "CONTEXT_OPTIONS",
+          "name": "IMAGE",
+          "type": "IMAGE",
           "links": [
-            627
+            882
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "2023-10-25_02-42-32_3087.png",
+        "image"
+      ],
+      "color": "#424fdd",
+      "bgcolor": "#2e3bc9"
+    },
+    {
+      "id": 367,
+      "type": "BatchPromptSchedule",
+      "pos": [
+        1090.0409507343281,
+        103.94170965439058
+      ],
+      "size": {
+        "0": 540,
+        "1": 600
+      },
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "POS",
+          "type": "CONDITIONING",
+          "links": [
+            821,
+            934
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "NEG",
+          "type": "CONDITIONING",
+          "links": [
+            935
+          ],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BatchPromptSchedule"
+      },
+      "widgets_values": [
+        "\"0\" :\"\",\n\"4\" :\"\",\n\"20\" :\"\",\n\"36\" :\"\",\n\"52\" :\"\",\n\"68\" :\"\",\n\"120\" :\"\"",
+        120,
+        false,
+        "",
+        "",
+        0,
+        0,
+        0,
+        0,
+        0.2
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 509,
+      "type": "ImageUpscaleWithModel",
+      "pos": [
+        3933.34485128125,
+        258.1981445026856
+      ],
+      "size": {
+        "0": 241.79998779296875,
+        "1": 46
+      },
+      "flags": {},
+      "order": 39,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "upscale_model",
+          "type": "UPSCALE_MODEL",
+          "link": 930
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 931
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            932
           ],
           "shape": 3,
           "slot_index": 0
         }
       ],
       "properties": {
-        "Node name for S&R": "ADE_AnimateDiffUniformContextOptions"
+        "Node name for S&R": "ImageUpscaleWithModel"
+      }
+    },
+    {
+      "id": 510,
+      "type": "UpscaleModelLoader",
+      "pos": [
+        3864.3100532968756,
+        500.4568773773804
+      ],
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "UPSCALE_MODEL",
+          "type": "UPSCALE_MODEL",
+          "links": [
+            930
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UpscaleModelLoader"
       },
       "widgets_values": [
-        16,
-        2,
-        2,
-        "uniform",
-        false
+        "4x_UniversalUpscalerV2-Neutral_115000_swaG.pth"
+      ]
+    },
+    {
+      "id": 436,
+      "type": "PreviewImage",
+      "pos": [
+        2911,
+        102
       ],
-      "color": "#232",
-      "bgcolor": "#353"
+      "size": {
+        "0": 820.0277099609375,
+        "1": 511.5301818847656
+      },
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 841
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 469,
+      "type": "Prompts Everywhere",
+      "pos": [
+        2710,
+        98
+      ],
+      "size": {
+        "0": 180,
+        "1": 50
+      },
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "MOTION_MODULE",
+          "type": "*",
+          "link": 933,
+          "color_on": ""
+        },
+        {
+          "name": "CONDITIONING",
+          "type": "*",
+          "link": 866,
+          "color_on": "#FFA931"
+        }
+      ],
+      "properties": {
+        "group_restricted": false,
+        "color_restricted": false,
+        "Node name for S&R": "Prompts Everywhere"
+      },
+      "color": "#998119",
+      "bgcolor": "#856d05"
+    },
+    {
+      "id": 464,
+      "type": "LoadImage",
+      "pos": [
+        -434.6212079101564,
+        476.2050009155273
+      ],
+      "size": {
+        "0": 320,
+        "1": 314
+      },
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            883
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "2023-11-06_03-29-56_5322.png",
+        "image"
+      ],
+      "color": "#424fdd",
+      "bgcolor": "#2e3bc9"
+    },
+    {
+      "id": 455,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": 1659,
+        "1": -90,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": {
+        "0": 540,
+        "1": 330
+      },
+      "flags": {
+        "pinned": false
+      },
+      "order": 21,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "## Understanding the settings\n\n<br>\nThere are 3 main settings:\n\n<br>\n\n- Key frame position\n- Length of influence\n- Strength of influence\n\n<br>\n\nThe type_of fields decide whether each of settings are the same for each frame or different.\n\n<br>\n\nWhen the type has been set to 'linear', you can adjust the value for every in with the _value fields.\n\n<br>\n\nWhen the type is set to 'dynamic', the text box below each setting are for the individual values - follow the format provided to set values for each frame.\n",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
+    },
+    {
+      "id": 513,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": 2250,
+        "1": -170,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": [
+        456.458421751458,
+        58
+      ],
+      "flags": {
+        "pinned": false
+      },
+      "order": 22,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "## Adding new LongAnimateDiff motion models",
+        "markdown",
+        ""
+      ],
+      "color": "#323",
+      "bgcolor": "#535",
+      "shape": 1
+    },
+    {
+      "id": 511,
+      "type": "AnimateDiffModuleLoader",
+      "pos": [
+        2250,
+        -60
+      ],
+      "size": [
+        322.2183984156254,
+        58
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "lora_stack",
+          "type": "MOTION_LORA_STACK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MOTION_MODULE",
+          "type": "MOTION_MODULE",
+          "links": [
+            933
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AnimateDiffModuleLoader"
+      },
+      "widgets_values": [
+        "lt_long_mm_16_64_frames.ckpt"
+      ]
+    },
+    {
+      "id": 281,
+      "type": "VHS_VideoCombine",
+      "pos": [
+        4550,
+        250
+      ],
+      "size": [
+        560,
+        473.06666666666666
+      ],
+      "flags": {},
+      "order": 40,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 932
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "VHS_VideoCombine"
+      },
+      "widgets_values": {
+        "frame_rate": 14,
+        "loop_count": 0,
+        "filename_prefix": "steerable-motion/AD_",
+        "format": "video/h264-mp4",
+        "pingpong": false,
+        "save_image": true,
+        "crf": 5,
+        "save_metadata": true,
+        "audio_file": "",
+        "videopreview": {
+          "hidden": false,
+          "paused": false,
+          "params": {
+            "filename": "AD__00014.mp4",
+            "subfolder": "steerable-motion",
+            "type": "output",
+            "format": "video/h264-mp4"
+          }
+        }
+      },
+      "color": "#222",
+      "bgcolor": "#000"
     },
     {
       "id": 207,
@@ -1483,7 +1578,7 @@
       "flags": {
         "pinned": false
       },
-      "order": 32,
+      "order": 35,
       "mode": 0,
       "inputs": [
         {
@@ -1494,12 +1589,12 @@
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": null
+          "link": 934
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": null
+          "link": 935
         },
         {
           "name": "latent_image",
@@ -1571,10 +1666,10 @@
       },
       "widgets_values": [
         "enable",
-        211020727321779,
+        162370253021386,
         null,
         20,
-        6.5,
+        3.6,
         "ddpm",
         "karras",
         5,
@@ -1588,53 +1683,109 @@
       "shape": 1
     },
     {
-      "id": 281,
-      "type": "VHS_VideoCombine",
+      "id": 187,
+      "type": "ADE_AnimateDiffLoaderWithContext",
       "pos": [
-        3500,
-        90
+        2557,
+        914
       ],
-      "size": [
-        560,
-        473.06666666666666
-      ],
-      "flags": {},
-      "order": 36,
+      "size": {
+        "0": 360,
+        "1": 190
+      },
+      "flags": {
+        "pinned": false
+      },
+      "order": 33,
       "mode": 0,
       "inputs": [
         {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 656
+          "name": "model",
+          "type": "MODEL",
+          "link": 854,
+          "slot_index": 0
+        },
+        {
+          "name": "context_options",
+          "type": "CONTEXT_OPTIONS",
+          "link": 627,
+          "slot_index": 1
+        },
+        {
+          "name": "motion_lora",
+          "type": "MOTION_LORA",
+          "link": null
+        },
+        {
+          "name": "motion_model_settings",
+          "type": "MOTION_MODEL_SETTINGS",
+          "link": null,
+          "slot_index": 3
         }
       ],
-      "outputs": [],
-      "properties": {
-        "Node name for S&R": "VHS_VideoCombine"
-      },
-      "widgets_values": {
-        "frame_rate": 14,
-        "loop_count": 0,
-        "filename_prefix": "steerable-motion/AD_",
-        "format": "video/h264-mp4",
-        "pingpong": false,
-        "save_image": true,
-        "crf": 20,
-        "save_metadata": true,
-        "audio_file": "",
-        "videopreview": {
-          "hidden": false,
-          "paused": false,
-          "params": {
-            "filename": "AD__00010.mp4",
-            "subfolder": "steerable-motion",
-            "type": "output",
-            "format": "video/h264-mp4"
-          }
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            815
+          ],
+          "shape": 3,
+          "slot_index": 0
         }
+      ],
+      "properties": {
+        "Node name for S&R": "ADE_AnimateDiffLoaderWithContext"
       },
-      "color": "#222",
-      "bgcolor": "#000"
+      "widgets_values": [
+        "lt_long_mm_16_64_frames.ckpt",
+        "sqrt_linear (AnimateDiff)",
+        0.74,
+        true
+      ],
+      "color": "#7f65b0",
+      "bgcolor": "#6b519c"
+    },
+    {
+      "id": 463,
+      "type": "LoadImage",
+      "pos": [
+        -434,
+        127
+      ],
+      "size": {
+        "0": 320,
+        "1": 314
+      },
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            879
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "2023-10-25_02-41-25_7078.png",
+        "image"
+      ],
+      "color": "#424fdd",
+      "bgcolor": "#2e3bc9"
     }
   ],
   "links": [
@@ -1645,14 +1796,6 @@
       187,
       1,
       "CONTEXT_OPTIONS"
-    ],
-    [
-      656,
-      292,
-      0,
-      281,
-      0,
-      "IMAGE"
     ],
     [
       756,
@@ -1723,14 +1866,6 @@
       370,
       0,
       466,
-      0,
-      "*"
-    ],
-    [
-      865,
-      437,
-      1,
-      469,
       0,
       "*"
     ],
@@ -1949,14 +2084,62 @@
       207,
       3,
       "LATENT"
+    ],
+    [
+      930,
+      510,
+      0,
+      509,
+      0,
+      "UPSCALE_MODEL"
+    ],
+    [
+      931,
+      292,
+      0,
+      509,
+      1,
+      "IMAGE"
+    ],
+    [
+      932,
+      509,
+      0,
+      281,
+      0,
+      "IMAGE"
+    ],
+    [
+      933,
+      511,
+      0,
+      469,
+      0,
+      "*"
+    ],
+    [
+      934,
+      367,
+      0,
+      207,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      935,
+      367,
+      1,
+      207,
+      2,
+      "CONDITIONING"
     ]
   ],
   "groups": [
     {
       "title": "Increase Framerate",
       "bounding": [
-        3469,
-        1077,
+        3534,
+        1067,
         741,
         291
       ],
@@ -1967,8 +2150,8 @@
     {
       "title": "Saving",
       "bounding": [
-        3469,
-        0,
+        3482,
+        -12,
         742,
         1047
       ],
@@ -1979,8 +2162,8 @@
     {
       "title": "Group",
       "bounding": [
-        0,
-        1,
+        282,
+        31,
         3435,
         832
       ],
@@ -1991,8 +2174,8 @@
     {
       "title": "INPUT IMAGES",
       "bounding": [
-        -975,
-        3,
+        -779,
+        39,
         954,
         831
       ],
@@ -2003,8 +2186,8 @@
     {
       "title": "IPAdapter Models",
       "bounding": [
-        1,
-        -320,
+        280,
+        -306,
         540,
         306
       ],
