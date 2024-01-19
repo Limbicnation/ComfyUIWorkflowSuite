@@ -1,5 +1,5 @@
 {
-  "last_node_id": 57,
+  "last_node_id": 59,
   "last_link_id": 66,
   "nodes": [
     {
@@ -14,7 +14,7 @@
         "1": 180.6060791015625
       },
       "flags": {},
-      "order": 7,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
@@ -47,7 +47,7 @@
       "id": 14,
       "type": "KSamplerSelect",
       "pos": [
-        393,
+        392,
         39
       ],
       "size": {
@@ -179,7 +179,7 @@
         "1": 50
       },
       "flags": {},
-      "order": 10,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
@@ -211,52 +211,188 @@
       "bgcolor": "#593930"
     },
     {
-      "id": 32,
-      "type": "ttN seed",
+      "id": 57,
+      "type": "SolidMask",
       "pos": [
-        874,
-        571
+        443,
+        185
       ],
       "size": {
-        "0": 315,
-        "1": 82
+        "0": 210,
+        "1": 110
       },
       "flags": {},
       "order": 3,
       "mode": 0,
       "outputs": [
         {
-          "name": "seed",
-          "type": "INT",
+          "name": "MASK",
+          "type": "MASK",
+          "links": [],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SolidMask"
+      },
+      "widgets_values": [
+        1,
+        415,
+        512
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 28,
+      "type": "SaveImage",
+      "pos": [
+        1295,
+        100
+      ],
+      "size": {
+        "0": 710,
+        "1": 690
+      },
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 55
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "SDXL_TURBO"
+      ],
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 6,
+      "type": "CLIPTextEncode",
+      "pos": [
+        282.15496826171875,
+        340
+      ],
+      "size": {
+        "0": 422.84503173828125,
+        "1": 164.31304931640625
+      },
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 38,
+          "slot_index": 0
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
           "links": [
-            62
+            19,
+            65
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "Create an intricate pixelated character design with vibrant colors, incorporating unique shapes for body parts while maintaining smooth transitions between them to create seamless movement within animation cycles. Incorporate geometric patterns or textures into clothing details such as stripes on shirts/dresses, checks in pants etc., using contrasting hues that stand out against backgrounds without losing focus of focal points due their lack of emphasis compared to other elements placed atop them during design process."
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 22,
+      "type": "SDTurboScheduler",
+      "pos": [
+        392,
+        -91
+      ],
+      "size": {
+        "0": 315,
+        "1": 82
+      },
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 45,
+          "slot_index": 0
+        }
+      ],
+      "outputs": [
+        {
+          "name": "SIGMAS",
+          "type": "SIGMAS",
+          "links": [
+            49
           ],
           "shape": 3,
           "slot_index": 0
         }
       ],
       "properties": {
-        "Node name for S&R": "ttN seed",
-        "ttNnodeVersion": "1.0.0"
+        "Node name for S&R": "SDTurboScheduler"
       },
       "widgets_values": [
-        504,
-        "decrement"
-      ]
+        10,
+        0.9
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 59,
+      "type": "Note",
+      "pos": [
+        392,
+        -198
+      ],
+      "size": {
+        "0": 303.5749816894531,
+        "1": 66.73677825927734
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "Play around with the noise parameter. Setting the denoise value too low will result in a blurry or distorted image. A value of 0.9 generated good results"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
     },
     {
       "id": 13,
       "type": "SamplerCustom",
       "pos": [
-        856,
-        239
+        860,
+        240
       ],
       "size": {
         "0": 290,
         "1": 230
       },
       "flags": {},
-      "order": 8,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
@@ -334,60 +470,52 @@
       "bgcolor": "#335"
     },
     {
-      "id": 22,
-      "type": "SDTurboScheduler",
+      "id": 32,
+      "type": "ttN seed",
       "pos": [
-        375,
-        -62
+        860,
+        570
       ],
       "size": {
         "0": 315,
-        "1": 58
+        "1": 82
       },
       "flags": {},
       "order": 5,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 45,
-          "slot_index": 0
-        }
-      ],
       "outputs": [
         {
-          "name": "SIGMAS",
-          "type": "SIGMAS",
+          "name": "seed",
+          "type": "INT",
           "links": [
-            49
+            62
           ],
           "shape": 3,
           "slot_index": 0
         }
       ],
       "properties": {
-        "Node name for S&R": "SDTurboScheduler"
+        "Node name for S&R": "ttN seed",
+        "ttNnodeVersion": "1.0.0"
       },
       "widgets_values": [
-        10
-      ],
-      "color": "#223",
-      "bgcolor": "#335"
+        500,
+        "decrement"
+      ]
     },
     {
       "id": 54,
       "type": "PixelTiledKSampleUpscalerProvider",
       "pos": [
-        863,
-        731
+        860,
+        730
       ],
       "size": {
         "0": 330,
         "1": 398
       },
       "flags": {},
-      "order": 9,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
@@ -438,7 +566,7 @@
       },
       "widgets_values": [
         "nearest-exact",
-        298855002592536,
+        74428819331265,
         "randomize",
         20,
         8,
@@ -449,110 +577,6 @@
         512,
         "random"
       ]
-    },
-    {
-      "id": 6,
-      "type": "CLIPTextEncode",
-      "pos": [
-        282.15496826171875,
-        340
-      ],
-      "size": {
-        "0": 422.84503173828125,
-        "1": 164.31304931640625
-      },
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 38,
-          "slot_index": 0
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            19,
-            65
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode"
-      },
-      "widgets_values": [
-        "a very cool pixel art character"
-      ],
-      "color": "#232",
-      "bgcolor": "#353"
-    },
-    {
-      "id": 57,
-      "type": "SolidMask",
-      "pos": [
-        443,
-        185
-      ],
-      "size": {
-        "0": 210,
-        "1": 110
-      },
-      "flags": {},
-      "order": 4,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": [],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "SolidMask"
-      },
-      "widgets_values": [
-        1,
-        415,
-        512
-      ],
-      "color": "#232",
-      "bgcolor": "#353"
-    },
-    {
-      "id": 28,
-      "type": "SaveImage",
-      "pos": [
-        1295,
-        100
-      ],
-      "size": {
-        "0": 710,
-        "1": 690
-      },
-      "flags": {},
-      "order": 11,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 55
-        }
-      ],
-      "properties": {},
-      "widgets_values": [
-        "SDXL_TURBO"
-      ],
-      "color": "#222",
-      "bgcolor": "#000"
     }
   ],
   "links": [
