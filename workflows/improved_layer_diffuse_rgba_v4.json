@@ -1,0 +1,688 @@
+{
+  "last_node_id": 52,
+  "last_link_id": 81,
+  "nodes": [
+    {
+      "id": 13,
+      "type": "LayeredDiffusionApply",
+      "pos": [
+        450,
+        130
+      ],
+      "size": {
+        "0": 327.8314208984375,
+        "1": 106.42147827148438
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            19
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LayeredDiffusionApply",
+        "ttNbgOverride": {
+          "color": "#223",
+          "bgcolor": "#335",
+          "groupcolor": "#88A"
+        }
+      },
+      "widgets_values": [
+        "SDXL, Conv Injection",
+        1
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 14,
+      "type": "VAEDecode",
+      "pos": [
+        1260,
+        370
+      ],
+      "size": {
+        "0": 210,
+        "1": 46
+      },
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 72
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 22,
+          "slot_index": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            74
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode",
+        "ttNbgOverride": {
+          "color": "#223",
+          "bgcolor": "#335",
+          "groupcolor": "#88A"
+        }
+      },
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 27,
+      "type": "PreviewImage",
+      "pos": [
+        2390,
+        90
+      ],
+      "size": {
+        "0": 289.6058349609375,
+        "1": 299.6588134765625
+      },
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 51,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage",
+        "ttNbgOverride": {
+          "color": "#223",
+          "bgcolor": "#335",
+          "groupcolor": "#88A"
+        }
+      },
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 36,
+      "type": "LayeredDiffusionDecodeRGBA",
+      "pos": [
+        1940,
+        240
+      ],
+      "size": {
+        "0": 243.60000610351562,
+        "1": 102
+      },
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 73
+        },
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 81
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            51,
+            77,
+            80
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LayeredDiffusionDecodeRGBA",
+        "ttNbgOverride": {
+          "color": "#223",
+          "bgcolor": "#335",
+          "groupcolor": "#88A"
+        }
+      },
+      "widgets_values": [
+        "SDXL",
+        16
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 4,
+      "type": "CheckpointLoaderSimple",
+      "pos": [
+        20,
+        370
+      ],
+      "size": {
+        "0": 315,
+        "1": 98
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            18
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            3,
+            5
+          ],
+          "slot_index": 1
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            22
+          ],
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CheckpointLoaderSimple",
+        "ttNbgOverride": {
+          "color": "#223",
+          "bgcolor": "#335",
+          "groupcolor": "#88A"
+        }
+      },
+      "widgets_values": [
+        "proteusRundiffusion_withclip.safetensors"
+      ],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 3,
+      "type": "KSampler",
+      "pos": [
+        910,
+        250
+      ],
+      "size": {
+        "0": 315,
+        "1": 262
+      },
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 19
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 4
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 6
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            72,
+            73
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler",
+        "ttNbgOverride": {
+          "color": "#223",
+          "bgcolor": "#335",
+          "groupcolor": "#88A"
+        }
+      },
+      "widgets_values": [
+        690671143236722,
+        "fixed",
+        20,
+        7.5,
+        "dpmpp_sde",
+        "normal",
+        1
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 6,
+      "type": "CLIPTextEncode",
+      "pos": [
+        450,
+        290
+      ],
+      "size": {
+        "0": 422.84503173828125,
+        "1": 164.31304931640625
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            4
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode",
+        "ttNbgOverride": {
+          "color": "#223",
+          "bgcolor": "#335",
+          "groupcolor": "#88A"
+        }
+      },
+      "widgets_values": [
+        "A classical marble statue of a muscular man in a dynamic pose, falling or floating, set against a dark, moody blue background. The statue has a strong, well-defined physique with intricate details in the muscles and hair. The overall atmosphere is dramatic and ethereal."
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 7,
+      "type": "CLIPTextEncode",
+      "pos": [
+        450,
+        490
+      ],
+      "size": {
+        "0": 425.27801513671875,
+        "1": 180.6060791015625
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            6
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode",
+        "ttNbgOverride": {
+          "color": "#223",
+          "bgcolor": "#335",
+          "groupcolor": "#88A"
+        }
+      },
+      "widgets_values": [
+        "text, watermark. NSFW. bad image, (bad hands:1.1), blurry image, Cartoonish style, low detail, blurry, pixelated, bright colors, futuristic elements, abstract shapes, smiling face, modern clothing, mechanical parts, plain background, flat lighting, low contrast, simplistic anatomy"
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 5,
+      "type": "EmptyLatentImage",
+      "pos": [
+        440,
+        730
+      ],
+      "size": {
+        "0": 404.27337646484375,
+        "1": 106
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            2
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EmptyLatentImage",
+        "ttNbgOverride": {
+          "color": "#223",
+          "bgcolor": "#335",
+          "groupcolor": "#88A"
+        }
+      },
+      "widgets_values": [
+        1024,
+        1024,
+        1
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 52,
+      "type": "SaveImage",
+      "pos": [
+        2400,
+        440
+      ],
+      "size": [
+        315,
+        270
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 80
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 20,
+      "type": "PreviewImage",
+      "pos": [
+        1990,
+        519
+      ],
+      "size": {
+        "0": 289.6058349609375,
+        "1": 299.6588134765625
+      },
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 77
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage",
+        "ttNbgOverride": {
+          "color": "#223",
+          "bgcolor": "#335",
+          "groupcolor": "#88A"
+        }
+      },
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 50,
+      "type": "ImageSharpen",
+      "pos": [
+        1550,
+        370
+      ],
+      "size": {
+        "0": 315,
+        "1": 106
+      },
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 74
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            81
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageSharpen"
+      },
+      "widgets_values": [
+        1,
+        3,
+        0.1
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    }
+  ],
+  "links": [
+    [
+      2,
+      5,
+      0,
+      3,
+      3,
+      "LATENT"
+    ],
+    [
+      3,
+      4,
+      1,
+      6,
+      0,
+      "CLIP"
+    ],
+    [
+      4,
+      6,
+      0,
+      3,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      5,
+      4,
+      1,
+      7,
+      0,
+      "CLIP"
+    ],
+    [
+      6,
+      7,
+      0,
+      3,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      18,
+      4,
+      0,
+      13,
+      0,
+      "MODEL"
+    ],
+    [
+      19,
+      13,
+      0,
+      3,
+      0,
+      "MODEL"
+    ],
+    [
+      22,
+      4,
+      2,
+      14,
+      1,
+      "VAE"
+    ],
+    [
+      51,
+      36,
+      0,
+      27,
+      0,
+      "IMAGE"
+    ],
+    [
+      72,
+      3,
+      0,
+      14,
+      0,
+      "LATENT"
+    ],
+    [
+      73,
+      3,
+      0,
+      36,
+      0,
+      "LATENT"
+    ],
+    [
+      74,
+      14,
+      0,
+      50,
+      0,
+      "IMAGE"
+    ],
+    [
+      77,
+      36,
+      0,
+      20,
+      0,
+      "IMAGE"
+    ],
+    [
+      80,
+      36,
+      0,
+      52,
+      0,
+      "IMAGE"
+    ],
+    [
+      81,
+      50,
+      0,
+      36,
+      1,
+      "IMAGE"
+    ]
+  ],
+  "groups": [
+    {
+      "title": "Layer Diffusion Decoder",
+      "bounding": [
+        5,
+        -6,
+        2741,
+        912
+      ],
+      "color": "#3f789e",
+      "font_size": 24
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1.771561000000002,
+      "offset": {
+        "0": -1332.1219534317672,
+        "1": -145.41845148407668
+      }
+    }
+  },
+  "version": 0.4
+}
