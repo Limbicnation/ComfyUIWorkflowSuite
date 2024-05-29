@@ -16,8 +16,8 @@ Below are examples of the image processing workflow, showcasing the transition f
 
 <table>
   <tr>
-    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/resized_chibi_character.png" alt="Low Resolution" width="512" height="512"></td>
-    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/resized_upscale_image.png" alt="High Resolution" width="512" height="512"></td>
+    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/resized_chibi_character.png" alt="Low Resolution" width="512"></td>
+    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/resized_upscale_image.png" alt="High Resolution" width="512"></td>
   </tr>
 </table>
 
