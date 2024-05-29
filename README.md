@@ -21,6 +21,6 @@ Below are examples of the image processing workflow, showcasing the transition f
   </tr>
 </table>
 
-### Workflow Diagram
+### [Workflow Diagram](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/basic-image-upscaler.png)
 
 ![Workflow](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/resized_image.png)
