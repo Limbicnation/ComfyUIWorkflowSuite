@@ -24,3 +24,14 @@ Below are examples of the image processing workflow, showcasing the transition f
 ### [Workflow Diagram](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/basic-image-upscaler.png)
 
 ![Workflow](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/resized_image.png)
+
+### [Resized Face Analysis Using DLib](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/resized_face_analysis.png)
+
+<table>
+  <tr>
+    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/resized_face_analysis_model.png" alt="Low Resolution" width="1024"></td>
+    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/resized_face_analysis.png" alt="High Resolution" width="512"></td>
+  </tr>
+</table>
+
+
