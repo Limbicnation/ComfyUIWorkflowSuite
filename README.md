@@ -25,7 +25,7 @@ Below are examples of the image processing workflow, showcasing the transition f
 
 ![Workflow](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/resized_image.png)
 
-### [Resized Face Analysis Using DLib](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/resized_face_analysis.png)
+### [Resized Face Analysis Using DLib](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/face-analysis-dlib-ip-adapter-workflow-v3.png) (based of from the work by [Matteo](https://github.com/cubiq))
 
 <table>
   <tr>
