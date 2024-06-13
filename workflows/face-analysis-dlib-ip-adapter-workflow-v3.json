@@ -511,7 +511,7 @@
         "color_restricted": 0
       },
       "widgets_values": [
-        "<comfy.sd.VAE object at 0x7f459c5bf9d0>"
+        "<comfy.sd.VAE object at 0x7f52402582e0>"
       ]
     },
     {
@@ -564,83 +564,13 @@
         "Node name for S&R": "KSampler"
       },
       "widgets_values": [
-        396474183813213,
+        842316572245551,
         "randomize",
         20,
         3,
         "dpmpp_2m",
         "karras",
         1
-      ]
-    },
-    {
-      "id": 23,
-      "type": "FaceBoundingBox",
-      "pos": [
-        4189,
-        -123
-      ],
-      "size": {
-        "0": 315,
-        "1": 186
-      },
-      "flags": {},
-      "order": 23,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "analysis_models",
-          "type": "ANALYSIS_MODELS",
-          "link": 38
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 39
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            41
-          ],
-          "shape": 6,
-          "slot_index": 0
-        },
-        {
-          "name": "x",
-          "type": "INT",
-          "links": null,
-          "shape": 6
-        },
-        {
-          "name": "y",
-          "type": "INT",
-          "links": null,
-          "shape": 6
-        },
-        {
-          "name": "width",
-          "type": "INT",
-          "links": null,
-          "shape": 6
-        },
-        {
-          "name": "height",
-          "type": "INT",
-          "links": null,
-          "shape": 6
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "FaceBoundingBox"
-      },
-      "widgets_values": [
-        0,
-        0.5,
-        -1
       ]
     },
     {
@@ -995,32 +925,6 @@
       }
     },
     {
-      "id": 20,
-      "type": "SaveImage",
-      "pos": [
-        6770,
-        400
-      ],
-      "size": [
-        315,
-        270
-      ],
-      "flags": {},
-      "order": 24,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 77
-        }
-      ],
-      "properties": {},
-      "widgets_values": [
-        "ComfyUI"
-      ]
-    },
-    {
       "id": 15,
       "type": "Note",
       "pos": [
@@ -1050,10 +954,10 @@
         6790,
         90
       ],
-      "size": [
-        210,
-        246
-      ],
+      "size": {
+        "0": 210,
+        "1": 246
+      },
       "flags": {},
       "order": 31,
       "mode": 0,
@@ -1138,49 +1042,7 @@
         "color_restricted": 0
       },
       "widgets_values": [
-        "<ComfyUI_FaceAnalysis.faceanalysis.DLib object at 0x7f459c643fa0>"
-      ]
-    },
-    {
-      "id": 18,
-      "type": "ImageScale",
-      "pos": [
-        6096,
-        720
-      ],
-      "size": {
-        "0": 315,
-        "1": 130
-      },
-      "flags": {},
-      "order": 22,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 26
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            77
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ImageScale"
-      },
-      "widgets_values": [
-        "nearest-exact",
-        2048,
-        2048,
-        "disabled"
+        "<ComfyUI_FaceAnalysis.faceanalysis.DLib object at 0x7f52402590c0>"
       ]
     },
     {
@@ -1235,7 +1097,7 @@
         "Node name for S&R": "KSampler"
       },
       "widgets_values": [
-        298027563518956,
+        16460594765732,
         "randomize",
         20,
         3.6,
@@ -1294,7 +1156,7 @@
         "Node name for S&R": "KSampler"
       },
       "widgets_values": [
-        89947677906543,
+        881101837330823,
         "randomize",
         20,
         3,
@@ -1355,7 +1217,7 @@
         "Node name for S&R": "KSampler"
       },
       "widgets_values": [
-        516172414709091,
+        948539351025871,
         "randomize",
         20,
         3,
@@ -1399,7 +1261,7 @@
         "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
-        "2024-01-27_04-29-15_7833.png",
+        "women_portrait4 (3).jpg",
         "image"
       ]
     },
@@ -1441,7 +1303,7 @@
         "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
-        "2024-01-27_04-29-54_7280 (4).png",
+        "women_portrait3 (1).jpg",
         "image"
       ]
     },
@@ -1563,6 +1425,144 @@
         100,
         1,
         false
+      ]
+    },
+    {
+      "id": 23,
+      "type": "FaceBoundingBox",
+      "pos": [
+        4186,
+        -121
+      ],
+      "size": {
+        "0": 315,
+        "1": 186
+      },
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "analysis_models",
+          "type": "ANALYSIS_MODELS",
+          "link": 38
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 39
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            41
+          ],
+          "shape": 6,
+          "slot_index": 0
+        },
+        {
+          "name": "x",
+          "type": "INT",
+          "links": null,
+          "shape": 6
+        },
+        {
+          "name": "y",
+          "type": "INT",
+          "links": null,
+          "shape": 6
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "links": null,
+          "shape": 6
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": null,
+          "shape": 6
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "FaceBoundingBox"
+      },
+      "widgets_values": [
+        0,
+        0.5,
+        -1
+      ]
+    },
+    {
+      "id": 20,
+      "type": "SaveImage",
+      "pos": [
+        6772,
+        403
+      ],
+      "size": {
+        "0": 315,
+        "1": 270
+      },
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 77
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "Portraits/Portraits_Upscaled_Version_001"
+      ]
+    },
+    {
+      "id": 18,
+      "type": "ImageScale",
+      "pos": [
+        6097,
+        708
+      ],
+      "size": {
+        "0": 315,
+        "1": 130
+      },
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            77
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScale"
+      },
+      "widgets_values": [
+        "nearest-exact",
+        2048,
+        2048,
+        "center"
       ]
     }
   ],
@@ -2032,15 +2032,27 @@
       "color": "#88A",
       "font_size": 24,
       "locked": false
+    },
+    {
+      "title": "Enhance and Crop Images",
+      "bounding": [
+        5939,
+        488,
+        614,
+        384
+      ],
+      "color": "#88A",
+      "font_size": 24,
+      "locked": false
     }
   ],
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.620921323059155,
+      "scale": 0.5131581182307068,
       "offset": [
-        -3840.3379589723672,
-        848.138243792134
+        -1030.0978444254752,
+        1043.9304755328678
       ]
     }
   },
