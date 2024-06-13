@@ -1,0 +1,675 @@
+{
+  "last_node_id": 56,
+  "last_link_id": 92,
+  "nodes": [
+    {
+      "id": 56,
+      "type": "ImageScale",
+      "pos": [
+        1930,
+        190
+      ],
+      "size": {
+        "0": 320,
+        "1": 130
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 91
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            92
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScale"
+      },
+      "widgets_values": [
+        "nearest-exact",
+        2048,
+        2048,
+        "disabled"
+      ]
+    },
+    {
+      "id": 14,
+      "type": "VAEDecode",
+      "pos": [
+        1290,
+        370
+      ],
+      "size": {
+        "0": 210,
+        "1": 50
+      },
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 72
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 22,
+          "slot_index": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            74
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      }
+    },
+    {
+      "id": 13,
+      "type": "LayeredDiffusionApply",
+      "pos": [
+        450,
+        130
+      ],
+      "size": {
+        "0": 330,
+        "1": 110
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            19
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LayeredDiffusionApply"
+      },
+      "widgets_values": [
+        "SDXL, Attention Injection",
+        1
+      ]
+    },
+    {
+      "id": 52,
+      "type": "SaveImage",
+      "pos": [
+        2400,
+        440
+      ],
+      "size": {
+        "0": 320,
+        "1": 270
+      },
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 80
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "Layer_Diffuse/Layer_Diffuse_Image_"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CheckpointLoaderSimple",
+      "pos": [
+        20,
+        370
+      ],
+      "size": {
+        "0": 320,
+        "1": 100
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            18
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            3,
+            5
+          ],
+          "slot_index": 1
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            22
+          ],
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CheckpointLoaderSimple"
+      },
+      "widgets_values": [
+        "juggernautXL_version2.safetensors"
+      ],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 50,
+      "type": "ImageSharpen",
+      "pos": [
+        1550,
+        490
+      ],
+      "size": {
+        "0": 320,
+        "1": 110
+      },
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 74
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            81,
+            87
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageSharpen"
+      },
+      "widgets_values": [
+        1,
+        3,
+        0.1
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 5,
+      "type": "EmptyLatentImage",
+      "pos": [
+        450,
+        720
+      ],
+      "size": {
+        "0": 400,
+        "1": 110
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            2
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EmptyLatentImage"
+      },
+      "widgets_values": [
+        1024,
+        1024,
+        4
+      ]
+    },
+    {
+      "id": 36,
+      "type": "LayeredDiffusionDecodeRGBA",
+      "pos": [
+        1580,
+        190
+      ],
+      "size": {
+        "0": 240,
+        "1": 100
+      },
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 73
+        },
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 81
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            80,
+            91
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LayeredDiffusionDecodeRGBA"
+      },
+      "widgets_values": [
+        "SDXL",
+        16
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CLIPTextEncode",
+      "pos": [
+        450,
+        290
+      ],
+      "size": {
+        "0": 420,
+        "1": 160
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            4
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "A sleek, dynamic 3D character of Sonic, striking a powerful, action-packed pose as if leaping or soaring through the air. The character has a streamlined, (well-defined hands:1.2) and physique with meticulously detailed muscles and spiky hair. Set against a dark, moody blue background, the scene captures an intense and otherworldly atmosphere, highlighting Sonic's essence of speed and agility.\n"
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 7,
+      "type": "CLIPTextEncode",
+      "pos": [
+        450,
+        500
+      ],
+      "size": {
+        "0": 430,
+        "1": 180
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            6
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "blurry, noisy, messy, bad hands, glitch, distorted, malformed, ill, horror, naked, nsfw, muted, bad eyes, dull, hazy, muddy colors, mutated, deformed, noise, stock image, borders, frame, watermark, text, signature, username, cropped, out of frame, bad composition, poorly rendered face, poorly drawn, poor facial details, poorly drawn hands, poorly rendered hands, low resolution, images cut out at the top, left, right, bottom, bad composition, mutated body parts, blurry image, disfigured, oversaturated, bad anatomy, deformed body features, washed out, lifeless, smoggy, sludgy hues, unfocused clarity, malformed, grainy textures, cliché stock aesthetics, cluttered edges, intrusive frame, obtrusive watermark, distracting text overlays, invasive signature, obtrusive usernames, truncated composition, elements awkwardly chopped, subject matter awkwardly exiting the frame, jarring arrangement of elements, inexpertly rendered visage, crudely illustrated facial features, substandard facial detailing, clumsily depicted appendages, amateurishly rendered extremities, pixelated visuals, snippets excised awkwardly, erratic cropping, chaotic layout, warped limbs, fuzzy outlines, contorted anatomy, exaggerated saturation levels, skewed bodily proportions, unnatural pose and structure, cartoonish style, low detail, bright colors, futuristic elements, abstract shapes, modern clothing, mechanical parts, plain background, flat lighting, low contrast, simplistic anatomy, malformed, extra limbs, poorly drawn anatomy, badly drawn, extra legs, blurry, censored, floating limbs, disconnected limbs, disconnected head, malformed hands, long neck, mutated hands and fingers, bad hands, missing fingers, worst quality, low quality, mutation, poorly drawn, huge calf, fused hand, missing hand, disappearing arms, disappearing thigh, disappearing calf, disappearing legs, missing fingers, fused fingers, abnormal eye proportion, abnormal hands, abnormal legs, abnormal feet, abnormal fingers, bad or crooked teeth, drawing, painting, crayon, sketch, graphite, impressionist, noisy, soft, deformed, ugly, text, watermark, NSFW, bad image, (bad hands:1.1), blurry image, cartoonish style, low detail, blurry, pixelated, bright colors, futuristic elements, abstract shapes, smiling face, modern clothing, mechanical parts, plain background, flat lighting, low contrast, simplistic anatomy\n"
+      ]
+    },
+    {
+      "id": 27,
+      "type": "PreviewImage",
+      "pos": [
+        2390,
+        90
+      ],
+      "size": {
+        "0": 290,
+        "1": 300
+      },
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 92,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 3,
+      "type": "KSampler",
+      "pos": [
+        930,
+        250
+      ],
+      "size": {
+        "0": 320,
+        "1": 260
+      },
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 19
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 4
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 6
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            72,
+            73
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler"
+      },
+      "widgets_values": [
+        810987653598327,
+        "randomize",
+        20,
+        7.1000000000000005,
+        "dpmpp_sde_gpu",
+        "karras",
+        1
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 20,
+      "type": "PreviewImage",
+      "pos": [
+        1950,
+        490
+      ],
+      "size": {
+        "0": 290,
+        "1": 300
+      },
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 87
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    }
+  ],
+  "links": [
+    [
+      2,
+      5,
+      0,
+      3,
+      3,
+      "LATENT"
+    ],
+    [
+      3,
+      4,
+      1,
+      6,
+      0,
+      "CLIP"
+    ],
+    [
+      4,
+      6,
+      0,
+      3,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      5,
+      4,
+      1,
+      7,
+      0,
+      "CLIP"
+    ],
+    [
+      6,
+      7,
+      0,
+      3,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      18,
+      4,
+      0,
+      13,
+      0,
+      "MODEL"
+    ],
+    [
+      19,
+      13,
+      0,
+      3,
+      0,
+      "MODEL"
+    ],
+    [
+      22,
+      4,
+      2,
+      14,
+      1,
+      "VAE"
+    ],
+    [
+      72,
+      3,
+      0,
+      14,
+      0,
+      "LATENT"
+    ],
+    [
+      73,
+      3,
+      0,
+      36,
+      0,
+      "LATENT"
+    ],
+    [
+      74,
+      14,
+      0,
+      50,
+      0,
+      "IMAGE"
+    ],
+    [
+      80,
+      36,
+      0,
+      52,
+      0,
+      "IMAGE"
+    ],
+    [
+      81,
+      50,
+      0,
+      36,
+      1,
+      "IMAGE"
+    ],
+    [
+      87,
+      50,
+      0,
+      20,
+      0,
+      "IMAGE"
+    ],
+    [
+      91,
+      36,
+      0,
+      56,
+      0,
+      "IMAGE"
+    ],
+    [
+      92,
+      56,
+      0,
+      27,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [
+    {
+      "title": "Layer Diffusion Decoder",
+      "bounding": [
+        10,
+        -10,
+        2741,
+        912
+      ],
+      "color": "#3f789e",
+      "font_size": 24,
+      "locked": false
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1.2100000000000006,
+      "offset": {
+        "0": 148.99445051104624,
+        "1": 546.7428052814596
+      }
+    }
+  },
+  "version": 0.4
+}
