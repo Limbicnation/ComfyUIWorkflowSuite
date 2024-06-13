@@ -1,12 +1,12 @@
 {
-  "last_node_id": 63,
-  "last_link_id": 102,
+  "last_node_id": 64,
+  "last_link_id": 106,
   "nodes": [
     {
       "id": 52,
       "type": "SaveImage",
       "pos": [
-        2400,
+        2870,
         440
       ],
       "size": {
@@ -14,13 +14,13 @@
         "1": 270
       },
       "flags": {},
-      "order": 11,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 80
+          "link": 106
         }
       ],
       "properties": {},
@@ -399,7 +399,7 @@
       "id": 36,
       "type": "LayeredDiffusionDecodeRGBA",
       "pos": [
-        1430,
+        1420,
         100
       ],
       "size": {
@@ -426,7 +426,6 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            80,
             99
           ],
           "shape": 3,
@@ -453,7 +452,7 @@
         "1": 30
       },
       "flags": {},
-      "order": 12,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
@@ -491,7 +490,7 @@
         "1": 130
       },
       "flags": {},
-      "order": 13,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
@@ -505,7 +504,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            101
+            104
           ],
           "shape": 3,
           "slot_index": 0
@@ -519,6 +518,49 @@
         2048,
         2048,
         "disabled"
+      ],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 64,
+      "type": "ImageScaleBy",
+      "pos": [
+        2460,
+        100
+      ],
+      "size": {
+        "0": 320,
+        "1": 80
+      },
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 104
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            105,
+            106
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScaleBy"
+      },
+      "widgets_values": [
+        "nearest-exact",
+        2
       ],
       "color": "#323",
       "bgcolor": "#535"
@@ -574,7 +616,7 @@
         "Node name for S&R": "KSampler"
       },
       "widgets_values": [
-        914661119287285,
+        914661119287294,
         "fixed",
         32,
         7,
@@ -589,7 +631,7 @@
       "id": 27,
       "type": "PreviewImage",
       "pos": [
-        2400,
+        2870,
         100
       ],
       "size": {
@@ -603,7 +645,7 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 101,
+          "link": 105,
           "slot_index": 0
         }
       ],
@@ -686,14 +728,6 @@
       "IMAGE"
     ],
     [
-      80,
-      36,
-      0,
-      52,
-      0,
-      "IMAGE"
-    ],
-    [
       81,
       50,
       0,
@@ -750,18 +784,34 @@
       "IMAGE"
     ],
     [
-      101,
+      102,
+      63,
+      0,
       56,
+      0,
+      "IMAGE"
+    ],
+    [
+      104,
+      56,
+      0,
+      64,
+      0,
+      "IMAGE"
+    ],
+    [
+      105,
+      64,
       0,
       27,
       0,
       "IMAGE"
     ],
     [
-      102,
-      63,
+      106,
+      64,
       0,
-      56,
+      52,
       0,
       "IMAGE"
     ]
@@ -772,8 +822,8 @@
       "bounding": [
         10,
         -10,
-        2741,
-        912
+        3230,
+        910
       ],
       "color": "#3f789e",
       "font_size": 24,
@@ -783,10 +833,10 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 1.1167815779424812,
+      "scale": 0.8390545288824026,
       "offset": {
-        "0": 485.3213481117689,
-        "1": 569.0645735672806
+        "0": 256.77184276661126,
+        "1": 814.3808860601457
       }
     }
   },
