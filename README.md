@@ -25,7 +25,7 @@ Below are examples of the image processing workflow, showcasing the transition f
 
 ![Workflow](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/resized_image.png)
 
-### [Resized Face Analysis Using DLib](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/face-analysis-dlib-ip-adapter-workflow-v3.png) (based of from the work by [Matteo](https://github.com/cubiq))
+### [Resized Face Analysis Using DLib](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/face-analysis-dlib-ip-adapter-workflow-v3.png) (based on the work by [Matteo](https://github.com/cubiq))
 
 <table>
   <tr>
@@ -34,4 +34,12 @@ Below are examples of the image processing workflow, showcasing the transition f
   </tr>
 </table>
 
+### [Naive Bayes Probability-Based Characters](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/Naive-Bayes-Probability-Based-Characters.png)
+
+<table>
+  <tr>
+    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/Naive-Bayes-Probability-Based-Characters.jpg" alt="Naive Bayes Probability-Based Characters" width="512"></td>
+    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/resized_Naive_Bayes_Probability_Based_Characters.png" alt="Resized Naive Bayes Probability-Based Characters" width="512"></td>
+  </tr>
+</table>
 
