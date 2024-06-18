@@ -1,58 +1,13 @@
 {
-  "last_node_id": 128,
-  "last_link_id": 263,
+  "last_node_id": 163,
+  "last_link_id": 351,
   "nodes": [
-    {
-      "id": 36,
-      "type": "LayeredDiffusionDecodeRGBA",
-      "pos": [
-        1370,
-        120
-      ],
-      "size": {
-        "0": 240,
-        "1": 100
-      },
-      "flags": {},
-      "order": 18,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "samples",
-          "type": "LATENT",
-          "link": 73
-        },
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 242
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            107
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LayeredDiffusionDecodeRGBA"
-      },
-      "widgets_values": [
-        "SDXL",
-        16
-      ]
-    },
     {
       "id": 57,
       "type": "LoraLoader",
       "pos": [
         350,
-        130
+        100
       ],
       "size": {
         "0": 320,
@@ -104,60 +59,6 @@
       ]
     },
     {
-      "id": 4,
-      "type": "CheckpointLoaderSimple",
-      "pos": [
-        80,
-        390
-      ],
-      "size": {
-        "0": 320,
-        "1": 100
-      },
-      "flags": {},
-      "order": 0,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            200,
-            225
-          ],
-          "slot_index": 0
-        },
-        {
-          "name": "CLIP",
-          "type": "CLIP",
-          "links": [
-            5,
-            96,
-            214,
-            226
-          ],
-          "slot_index": 1
-        },
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": [
-            22,
-            227
-          ],
-          "slot_index": 2
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CheckpointLoaderSimple"
-      },
-      "widgets_values": [
-        "juggernautXL_version2.safetensors"
-      ],
-      "color": "#323",
-      "bgcolor": "#535"
-    },
-    {
       "id": 7,
       "type": "CLIPTextEncode",
       "pos": [
@@ -202,14 +103,14 @@
       "type": "ToBasicPipe",
       "pos": [
         720,
-        1450
+        1460
       ],
       "size": {
         "0": 240,
         "1": 110
       },
       "flags": {},
-      "order": 15,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
@@ -258,14 +159,14 @@
       "type": "UltralyticsDetectorProvider",
       "pos": [
         780,
-        1300
+        1310
       ],
       "size": {
         "0": 320,
         "1": 80
       },
       "flags": {},
-      "order": 1,
+      "order": 0,
       "mode": 0,
       "outputs": [
         {
@@ -291,53 +192,11 @@
       ]
     },
     {
-      "id": 14,
-      "type": "VAEDecode",
-      "pos": [
-        1390,
-        310
-      ],
-      "size": {
-        "0": 210,
-        "1": 50
-      },
-      "flags": {},
-      "order": 14,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "samples",
-          "type": "LATENT",
-          "link": 72
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 22,
-          "slot_index": 1
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            241
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VAEDecode"
-      }
-    },
-    {
       "id": 101,
       "type": "CLIPTextEncode",
       "pos": [
         80,
-        1610
+        1620
       ],
       "size": {
         "0": 430,
@@ -377,14 +236,14 @@
       "type": "FromBasicPipe_v2",
       "pos": [
         1010,
-        1460
+        1470
       ],
       "size": {
         "0": 270,
         "1": 130
       },
       "flags": {},
-      "order": 16,
+      "order": 17,
       "mode": 0,
       "inputs": [
         {
@@ -453,55 +312,140 @@
       }
     },
     {
-      "id": 56,
-      "type": "ImageScale",
+      "id": 126,
+      "type": "FloatToMask",
       "pos": [
-        1760,
-        120
+        630,
+        -220
       ],
       "size": {
         "0": 320,
-        "1": 130
+        "1": 110
       },
       "flags": {},
-      "order": 19,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 107
+          "name": "input_values",
+          "type": "FLOAT",
+          "link": 259,
+          "widget": {
+            "name": "input_values"
+          }
         }
       ],
       "outputs": [
         {
-          "name": "IMAGE",
-          "type": "IMAGE",
+          "name": "MASK",
+          "type": "MASK",
           "links": [
-            119
+            256
           ],
           "shape": 3,
           "slot_index": 0
         }
       ],
       "properties": {
-        "Node name for S&R": "ImageScale"
+        "Node name for S&R": "FloatToMask"
       },
       "widgets_values": [
-        "nearest-exact",
-        4096,
-        4096,
-        "disabled"
+        0,
+        100,
+        100
       ],
-      "color": "#323",
-      "bgcolor": "#535"
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 98,
+      "type": "CLIPTextEncode",
+      "pos": [
+        60,
+        1390
+      ],
+      "size": {
+        "0": 420,
+        "1": 160
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 209
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            261
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "A 3D ((front facing:1.3)) character, full body in \"A\" Pose, inspired by a futuristic warrior, equipped with a sleek, armored suit featuring glowing neon accents. The character wears a helmet with a visor, with intricate and detailed facial features visible. The setting is a cyberpunk cityscape at night, illuminated by vibrant lights and enveloped in a moody atmosphere. The scene captures the essence of a high-tech, dystopian future with intricate details and dynamic lighting. embedding:verybadimagenegative_v1.3"
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 128,
+      "type": "ConditioningConcat",
+      "pos": [
+        390,
+        1160
+      ],
+      "size": {
+        "0": 380,
+        "1": 50
+      },
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning_to",
+          "type": "CONDITIONING",
+          "link": 261
+        },
+        {
+          "name": "conditioning_from",
+          "type": "CONDITIONING",
+          "link": 263
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            262
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ConditioningConcat"
+      },
+      "color": "#223",
+      "bgcolor": "#335"
     },
     {
       "id": 97,
       "type": "FaceDetailer",
       "pos": [
         1450,
-        1200
+        1210
       ],
       "size": {
         "0": 510,
@@ -510,13 +454,13 @@
       "flags": {
         "collapsed": false
       },
-      "order": 17,
+      "order": 18,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 241
+          "link": 279
         },
         {
           "name": "model",
@@ -570,7 +514,7 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            242
+            282
           ],
           "shape": 3,
           "slot_index": 0
@@ -613,7 +557,7 @@
         512,
         true,
         1024,
-        710116958332168,
+        84886836952632,
         "randomize",
         20,
         8,
@@ -640,167 +584,90 @@
       ]
     },
     {
-      "id": 13,
-      "type": "LayeredDiffusionApply",
+      "id": 4,
+      "type": "CheckpointLoaderSimple",
       "pos": [
-        730,
-        130
+        80,
+        390
       ],
       "size": {
-        "0": 330,
-        "1": 110
+        "0": 320,
+        "1": 100
       },
       "flags": {},
-      "order": 8,
+      "order": 1,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 94
-        }
-      ],
       "outputs": [
         {
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            183
+            200,
+            225
           ],
-          "shape": 3,
           "slot_index": 0
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            5,
+            96,
+            214,
+            226
+          ],
+          "slot_index": 1
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            22,
+            227,
+            301
+          ],
+          "slot_index": 2
         }
       ],
       "properties": {
-        "Node name for S&R": "LayeredDiffusionApply"
+        "Node name for S&R": "CheckpointLoaderSimple"
       },
       "widgets_values": [
-        "SDXL, Attention Injection",
-        1
-      ]
-    },
-    {
-      "id": 63,
-      "type": "ImageFilterDetail",
-      "pos": [
-        2150,
-        120
+        "juggernautXL_version2.safetensors"
       ],
-      "size": {
-        "0": 210,
-        "1": 30
-      },
-      "flags": {},
-      "order": 20,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 119
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            245,
-            260
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ImageFilterDetail"
-      },
       "color": "#323",
       "bgcolor": "#535"
     },
     {
-      "id": 126,
-      "type": "FloatToMask",
+      "id": 143,
+      "type": "Anything Everywhere",
       "pos": [
-        630,
-        -230
+        250,
+        570
       ],
-      "size": [
-        320,
-        110
-      ],
+      "size": {
+        "0": 210,
+        "1": 80
+      },
       "flags": {},
       "order": 7,
       "mode": 0,
       "inputs": [
         {
-          "name": "input_values",
-          "type": "FLOAT",
-          "link": 259,
-          "widget": {
-            "name": "input_values"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": [
-            256
-          ],
-          "shape": 3,
-          "slot_index": 0
+          "name": "VAE",
+          "type": "*",
+          "link": 301,
+          "color_on": "#be616b"
         }
       ],
       "properties": {
-        "Node name for S&R": "FloatToMask"
+        "Node name for S&R": "Anything Everywhere",
+        "group_restricted": 0,
+        "color_restricted": 0
       },
       "widgets_values": [
-        0,
-        100,
-        100
-      ],
-      "color": "#233",
-      "bgcolor": "#355"
-    },
-    {
-      "id": 118,
-      "type": "NaiveBayesNode",
-      "pos": [
-        160,
-        -230
-      ],
-      "size": {
-        "0": 320,
-        "1": 150
-      },
-      "flags": {},
-      "order": 2,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "probability",
-          "type": "FLOAT",
-          "links": [
-            259
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "NaiveBayesNode"
-      },
-      "widgets_values": [
-        "Kurzhaar",
-        "Blau",
-        "Sonnenbrille",
-        "Kaputzenpullover",
-        "Blau"
-      ],
-      "color": "#233",
-      "bgcolor": "#355"
+        "<comfy.sd.VAE object at 0x78516f7e5090>"
+      ]
     },
     {
       "id": 5,
@@ -814,7 +681,7 @@
         "1": 110
       },
       "flags": {},
-      "order": 3,
+      "order": 2,
       "mode": 0,
       "outputs": [
         {
@@ -836,46 +703,6 @@
       ]
     },
     {
-      "id": 6,
-      "type": "CLIPTextEncode",
-      "pos": [
-        510,
-        320
-      ],
-      "size": {
-        "0": 420,
-        "1": 160
-      },
-      "flags": {},
-      "order": 9,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 95
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            257
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode"
-      },
-      "widgets_values": [
-        "A 3D ((front facing:1.3) character, full body in \"A\" Pose, inspired by a futuristic warrior, equipped with a sleek, armored suit featuring glowing neon accents. The character wears a helmet with a visor. The setting is a cyberpunk cityscape at night, illuminated by vibrant lights and enveloped in a moody atmosphere. The scene captures the essence of a high-tech, dystopian future with intricate details and dynamic lighting. embedding:verybadimagenegative_v1.3\n"
-      ],
-      "color": "#232",
-      "bgcolor": "#353"
-    },
-    {
       "id": 3,
       "type": "KSampler",
       "pos": [
@@ -887,7 +714,7 @@
         "1": 260
       },
       "flags": {},
-      "order": 12,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
@@ -926,7 +753,7 @@
         "Node name for S&R": "KSampler"
       },
       "widgets_values": [
-        914661119287309,
+        753673827943238,
         "fixed",
         32,
         7,
@@ -938,11 +765,248 @@
       "bgcolor": "#335"
     },
     {
-      "id": 98,
+      "id": 20,
+      "type": "PreviewImage",
+      "pos": [
+        2680,
+        590
+      ],
+      "size": {
+        "0": 290,
+        "1": 300
+      },
+      "flags": {
+        "collapsed": true
+      },
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 334
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 63,
+      "type": "ImageFilterDetail",
+      "pos": [
+        2360,
+        280
+      ],
+      "size": {
+        "0": 210,
+        "1": 30
+      },
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 343
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            333,
+            334
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageFilterDetail"
+      },
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 36,
+      "type": "LayeredDiffusionDecodeRGBA",
+      "pos": [
+        1400,
+        280
+      ],
+      "size": {
+        "0": 240,
+        "1": 100
+      },
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 73
+        },
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 282
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            335
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LayeredDiffusionDecodeRGBA"
+      },
+      "widgets_values": [
+        "SDXL",
+        16
+      ]
+    },
+    {
+      "id": 135,
+      "type": "Ensure3ChannelImageNode",
+      "pos": [
+        1700,
+        280
+      ],
+      "size": {
+        "0": 230,
+        "1": 30
+      },
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 335
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output_image",
+          "type": "IMAGE",
+          "links": [
+            345
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Ensure3ChannelImageNode"
+      },
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 56,
+      "type": "ImageScale",
+      "pos": [
+        1980,
+        280
+      ],
+      "size": {
+        "0": 320,
+        "1": 130
+      },
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 345
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            343
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScale"
+      },
+      "widgets_values": [
+        "lanczos",
+        4096,
+        4096,
+        "disabled"
+      ],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 14,
+      "type": "VAEDecode",
+      "pos": [
+        1410,
+        440
+      ],
+      "size": {
+        "0": 210,
+        "1": 50
+      },
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 72
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 22,
+          "slot_index": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            279
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 6,
       "type": "CLIPTextEncode",
       "pos": [
-        60,
-        1380
+        510,
+        310
       ],
       "size": {
         "0": 420,
@@ -955,7 +1019,7 @@
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 209
+          "link": 95
         }
       ],
       "outputs": [
@@ -963,7 +1027,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            261
+            257
           ],
           "slot_index": 0
         }
@@ -972,51 +1036,24 @@
         "Node name for S&R": "CLIPTextEncode"
       },
       "widgets_values": [
-        "A 3D ((front facing:1.3)) character, full body in \"A\" Pose, inspired by a futuristic warrior, equipped with a sleek, armored suit featuring glowing neon accents. The character wears a helmet with a visor, with intricate and detailed facial features visible. The setting is a cyberpunk cityscape at night, illuminated by vibrant lights and enveloped in a moody atmosphere. The scene captures the essence of a high-tech, dystopian future with intricate details and dynamic lighting. embedding:verybadimagenegative_v1.3"
+        "A 3D ((front facing:1.3) character, full body in \"A\" Pose, inspired by a futuristic warrior, equipped with a sleek, armored suit featuring glowing neon accents. The character wears a helmet with a visor. The setting is a cyberpunk cityscape at night, illuminated by vibrant lights and enveloped in a moody atmosphere. The scene captures the essence of a high-tech, dystopian future with intricate details and dynamic lighting. embedding:verybadimagenegative_v1.3\n"
       ],
-      "color": "#2a363b",
-      "bgcolor": "#3f5159"
-    },
-    {
-      "id": 20,
-      "type": "PreviewImage",
-      "pos": [
-        2450,
-        570
-      ],
-      "size": {
-        "0": 290,
-        "1": 300
-      },
-      "flags": {
-        "collapsed": true
-      },
-      "order": 22,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 260
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PreviewImage"
-      }
+      "color": "#232",
+      "bgcolor": "#353"
     },
     {
       "id": 127,
       "type": "ConditioningSetMask",
       "pos": [
-        1350,
-        -230
+        1290,
+        -220
       ],
       "size": {
         "0": 320,
         "1": 100
       },
       "flags": {},
-      "order": 11,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
@@ -1046,61 +1083,96 @@
         "Node name for S&R": "ConditioningSetMask"
       },
       "widgets_values": [
-        1,
+        0.5,
         "default"
       ],
       "color": "#233",
       "bgcolor": "#355"
     },
     {
-      "id": 128,
-      "type": "ConditioningConcat",
+      "id": 118,
+      "type": "NaiveBayesNode",
       "pos": [
-        390,
-        1150
+        160,
+        -220
       ],
       "size": {
-        "0": 380,
-        "1": 50
+        "0": 320,
+        "1": 150
       },
       "flags": {},
-      "order": 13,
+      "order": 3,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "conditioning_to",
-          "type": "CONDITIONING",
-          "link": 261
-        },
-        {
-          "name": "conditioning_from",
-          "type": "CONDITIONING",
-          "link": 263
-        }
-      ],
       "outputs": [
         {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
+          "name": "probability",
+          "type": "FLOAT",
           "links": [
-            262
+            259
           ],
           "shape": 3,
           "slot_index": 0
         }
       ],
       "properties": {
-        "Node name for S&R": "ConditioningConcat"
+        "Node name for S&R": "NaiveBayesNode"
       },
-      "color": "#223",
-      "bgcolor": "#335"
+      "widgets_values": [
+        "Kurzhaar",
+        "Rot",
+        "OhneBrille",
+        "Kaputzenpullover",
+        "Weiss"
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 13,
+      "type": "LayeredDiffusionApply",
+      "pos": [
+        730,
+        100
+      ],
+      "size": {
+        "0": 330,
+        "1": 110
+      },
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 94
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            183
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LayeredDiffusionApply"
+      },
+      "widgets_values": [
+        "SDXL, Attention Injection",
+        1
+      ]
     },
     {
       "id": 52,
       "type": "SaveImage",
       "pos": [
-        2400,
-        230
+        2660,
+        170
       ],
       "size": {
         "0": 320,
@@ -1109,13 +1181,13 @@
       "flags": {
         "collapsed": false
       },
-      "order": 21,
+      "order": 23,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 245
+          "link": 333
         }
       ],
       "properties": {},
@@ -1196,22 +1268,6 @@
       57,
       1,
       "CLIP"
-    ],
-    [
-      107,
-      36,
-      0,
-      56,
-      0,
-      "IMAGE"
-    ],
-    [
-      119,
-      56,
-      0,
-      63,
-      0,
-      "IMAGE"
     ],
     [
       183,
@@ -1326,36 +1382,12 @@
       "CONDITIONING"
     ],
     [
-      241,
-      14,
-      0,
-      97,
-      0,
-      "IMAGE"
-    ],
-    [
-      242,
-      97,
-      0,
-      36,
-      1,
-      "IMAGE"
-    ],
-    [
       244,
       101,
       0,
       108,
       4,
       "CONDITIONING"
-    ],
-    [
-      245,
-      63,
-      0,
-      52,
-      0,
-      "IMAGE"
     ],
     [
       256,
@@ -1390,14 +1422,6 @@
       "FLOAT"
     ],
     [
-      260,
-      63,
-      0,
-      20,
-      0,
-      "IMAGE"
-    ],
-    [
       261,
       98,
       0,
@@ -1420,6 +1444,70 @@
       128,
       1,
       "CONDITIONING"
+    ],
+    [
+      279,
+      14,
+      0,
+      97,
+      0,
+      "IMAGE"
+    ],
+    [
+      282,
+      97,
+      0,
+      36,
+      1,
+      "IMAGE"
+    ],
+    [
+      301,
+      4,
+      2,
+      143,
+      0,
+      "VAE"
+    ],
+    [
+      333,
+      63,
+      0,
+      52,
+      0,
+      "IMAGE"
+    ],
+    [
+      334,
+      63,
+      0,
+      20,
+      0,
+      "IMAGE"
+    ],
+    [
+      335,
+      36,
+      0,
+      135,
+      0,
+      "IMAGE"
+    ],
+    [
+      343,
+      56,
+      0,
+      63,
+      0,
+      "IMAGE"
+    ],
+    [
+      345,
+      135,
+      0,
+      56,
+      0,
+      "IMAGE"
     ]
   ],
   "groups": [
@@ -1428,8 +1516,8 @@
       "bounding": [
         70,
         10,
-        2800,
-        970
+        2970,
+        980
       ],
       "color": "#3f789e",
       "font_size": 24,
@@ -1439,7 +1527,7 @@
       "title": "FaceDetailer",
       "bounding": [
         70,
-        990,
+        1000,
         1980,
         1150
       ],
@@ -1463,11 +1551,11 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.7627768444385566,
-      "offset": {
-        "0": 775.089911167942,
-        "1": 497.9355993867978
-      }
+      "scale": 0.5209868481924383,
+      "offset": [
+        726.0242236896379,
+        429.02128840150806
+      ]
     }
   },
   "version": 0.4
