@@ -43,3 +43,11 @@ Below are examples of the image processing workflow, showcasing the transition f
   </tr>
 </table>
 
+### [Mad Scientist Workflow](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/mad-scientist-scifi-character-v1.png)
+Note: You might need these [tools](https://github.com/Limbicnation/ComfyUINodeToolbox/tree/main/ComfyUI_RandomSeedGeneratorNode) to avoid errors.
+<table>
+  <tr>
+    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/resized-mad-scientist-v1.jpg" alt="Mad Scientist Character" width="512"></td>
+    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/resized-mad-scientist-v1-workflow.jpg" alt="Mad Scientist Workflow" width="512"></td>
+  </tr>
+</table>
