@@ -1,0 +1,4233 @@
+
+
+---
+Path: messages.md
+---
+# Send a message from Python to JavaScript 
+
+In python, just use the Prompt Server to send a message with a unique handle. Messages are dictionaries of JSON serializable things.
+```python
+from server import PromptServer
+dictionary_of_stuff = {"something":"A text message"}
+PromptServer.instance.send_sync("my-message-handle", dictionary_of_stuff)
+```
+
+In the JavaScript, add an event listener for your unique handle, and provide it with a method to call with the event. The dictionary sent can be found in `event.detail`.
+```javascript
+import { app } from "../../../scripts/app.js";
+def myMessageHandler(event) {
+    alert(event.detail.something);
+}
+// in setup()
+api.addEventListener("my-message-handle", myMessageHandler);
+```
+
+---
+Path: canvas_menu.md
+---
+# Adding to the canvas menu
+
+The canvas menu is the one you get if you right-click on the background - to add nodes, etc.. You can add to it:
+
+```javascript
+    async setup() {
+        const original_getCanvasMenuOptions = app.canvas.getCanvasMenuOptions;    // save the original function
+        app.canvas.getCanvasMenuOptions = function () {
+            const options = original_getCanvasMenuOptions.apply(this, arguments); // call the original function
+            options.push(null);                          // divider
+            options.push({
+                content: `Menu item text`,
+                disabled: false,                         // or a function determining whether to disable
+                callback: () => {
+                                       // action when clicked goes in here
+                }
+            });
+            return options;                              // return the menu options with your custom ones added
+        }
+    }
+```
+
+---
+Path: api.md
+---
+# How to add a route to the server api
+
+In your custom node python file...
+
+```python
+from server import PromptServer
+from aiohttp import web
+
+@routes.post('/a_new_path')
+async def my_hander_method(request):
+    post = await request.post()
+    x = post.get("something")
+    return web.json_response({})
+```
+
+In the javascript, the code is something like:
+```javascript
+function send_message(message) {
+    const body = new FormData();
+    body.append('something',message);
+    api.fetchApi("/a_new_path", { method: "POST", body, });
+}
+```
+
+---
+Path: quick_questions.md
+---
+# Quick questions that have been asked in the issues and some answers
+
+## Loops
+
+> I need a simple loop logic, is there any idea how to implement it?
+> I imagine having one node "LoopStart" and one node "LoopEnd", which will decide, if it should activate a connection back to start or forward to the next nodes, depending of the loop index. Though I can't find any information if it's possible at all to decide to activate or not activate certain outputs/connections and also I guess ComfyUI might block the workflow with loops.
+
+> Would you give any advice?
+
+I'd advise you not to do this :). The way Comfy works is to submit a complete prompt at the start - modifying the logic afterwards is not at all easy. If you submit a prompt with a loop you will generally crash the python backend.
+
+What I have done is to have nodes which hold state between runs, and then used the auto submit option to make Comfy submit the same workflow repeatedly. 
+
+---
+Path: control_after_generate.md
+---
+# How do I get a widget to have control_after_generate
+
+Seeds in the KSampler nodes are INT with an additional feature - the control_after_generate setting. This is automatically added to any INT with the name seed or noise_seed. If you want to apply it to another widget (for instance, variation_seed...), here's the code I used in the variation noise nodes:
+
+```javascript
+import { app } from "../../../scripts/app.js";
+import { addValueControlWidget } from "../../../scripts/widgets.js";
+
+app.registerExtension({
+	name: "my.unique.extension.name",
+	async nodeCreated(node) { 
+        const variationSeedWidgetIndex = node.widgets?.findIndex((w) => w.name === 'variation_seed'); 
+        if (variationSeedWidgetIndex > -1) {
+            const variationSeedWidget = node.widgets[variationSeedWidgetIndex];
+            const variationSeedValueControl = addValueControlWidget(node, variationSeedWidget, "fixed");
+            node.widgets.splice(variationSeedWidgetIndex+1,0,node.widgets.pop());
+        }
+    }
+});
+```
+
+nodeCreated is called for every node type; search the node widgets for ones called variation_seed, use the addValueControlWidget method to add the control to the end of the widget list, and then use splice to move it to directly after the variation_seed.
+
+## Why *after*?
+
+It's control *after* generate because of the way ConfyUI works: when you queue a prompt the whole thing (graph and widget values) gets bundled up and sent to the backend. Code generally gets run on the nodes in response (progress bars, images etc), by which time changing the widgets doesn't have any effect on the execution. 
+
+So *mostly* the javascript can only change things in preparation for the next run.
+
+---
+Path: ui_1_starting.md
+---
+# First steps in extending the UI
+
+
+## Making your node send a message
+
+```python
+class MyNode:
+  IS_OUTPUT = True
+...
+  def the_func(self, input, ...):
+
+    return { "ui": {"name":value}, "result" : (the output tuple) }
+```
+Only output nodes send a message back to the front end; the message is defined by replacing the usual tuple at the end of your function with a dictionary where the tuple is keyed to `result` and a message dictionary is keyed to `ui`.
+
+## How to register an extension
+
+You'll most likely want to write something like:
+```JavaScript
+import { app } from "../../../scripts/app.js";
+app.registerExtension({                                                                       // 1
+	name: "a.unqiue.name.for.this.extension",
+	async beforeRegisterNodeDef(nodeType, nodeData, app) {                                // 2
+		if (node?.comfyClass === "The unique name of my node class on the backend") { // 3
+			const onExecuted = nodeType.prototype.onExecuted;                     // 4
+			nodeType.prototype.onExecuted = function (message) {
+				onExecuted?.apply(this, arguments);                           // 5
+				// do something with the message                              // 6
+			}
+		}
+	},
+}),
+```
+Walking through that:
+- 1 Using the ComfyUI app.js we're registering an extension by passing a unique name and an async function
+- 2 The function name determines when it is called - see below
+- 3 beforeRegisterNodeDef is called for every nodeType so check if it's your node
+- 4 onExecuted is called when the node finishes executing. If there's already an onExecuted method, save it in the const
+- 5 replace onExecuted with your new code; the first line of which calls the one you saved
+- 5a the only other useful method to replace is onExecutionStart, which is called without parameters at the start of a run
+- 6 message is that dictionary you defined in the python 'ui' return
+
+## What method names?
+
+Search in app.js for `invokeExtensions` - these are the methods that can be used at 2 to get your code called during the startup process.
+
+| Method | Parameters | Called | Returns |
+|-|-|-|-|
+| init | None | When the page is loaded, before any nodes or workflow |
+| setup | None | At the end of the setup |
+| addCustomNodeDefs | defs - the node_info for each type of node | Once before any node types are defined |
+| getCustomWidgets | None | Once to generate a list of custom widgets | Custom Widget | 
+| nodeCreated | The ComfyNode object for a node type | Once for each node type as created |
+| beforeRegisterNodeDef | The ComfyNode object for a node type, and it's node_data | Once for each node type after created, before registering with LiteGraph |
+| registerCustomNodes | None | Once after all custom node types have been added | 
+| loadedGraphNode | node | for each node when it is loaded | not called async |
+
+## How to deploy JavaScript
+
+Add a `js` folder to your repository, and in `__init__.py` include code along these lines:
+
+```python
+WEB_DIRECTORY = "./js"
+__all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS", "WEB_DIRECTORY"]
+```
+
+When ComfyUI loads your custom node, the `js` directory will be copied to [comfy]/web/extensions/A_UNIQUE_NAME, and all `.js` files in it will be sent to the browser and executed when the page is loaded.
+
+
+
+
+---
+Path: subclassing.md
+---
+# Subclassing Custom Nodes
+
+You can subclass nodes. The simplest example of this is the Preview Node is a subclass of the Save image node.
+
+class PreviewImage(SaveImage):
+    def __init__(self):
+        self.output_dir = folder_paths.get_temp_directory()
+        self.type = "temp"
+        self.prefix_append = "_temp_" + ''.join(random.choice("abcdefghijklmnopqrstupvxyz") for x in range(5))
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+                    {"images": ("IMAGE", ), },
+                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+                } 
+The INPUT_TYPES is overridden so that you no longer have a prefix edit widget, and the init sets up a temp file for the preview image to be saved as.
+
+Subclassing custom nodes might depend on scope visibility. I can't see why it wouldn't work if the subclass were in the same file as the parent. There may be issues if the Parent node class is not visible from the context where you wish to make subclass. That should be easy to test for a given context using globals()["ParentClass"]
+
+
+---
+Path: custom_widget.md
+---
+
+## Widgets that are just for show
+
+Here's the code for a node that just shows some html...
+
+```Javascript
+import { app } from "../../../scripts/app.js";
+import { $el } from "../../../scripts/ui.js";
+
+/* 
+A method that returns the required style for the html 
+*/
+function get_position_style(ctx, widget_width, y, node_height) {
+    const MARGIN = 4;  // the margin around the html element
+
+/* Create a transform that deals with all the scrolling and zooming */
+    const elRect = ctx.canvas.getBoundingClientRect();
+    const transform = new DOMMatrix()
+        .scaleSelf(elRect.width / ctx.canvas.width, elRect.height / ctx.canvas.height)
+        .multiplySelf(ctx.getTransform())
+        .translateSelf(MARGIN, MARGIN + y);
+
+    return {
+        transformOrigin: '0 0',
+        transform: transform,
+        left: `0px`, 
+        top: `0px`,
+        position: "absolute",
+        maxWidth: `${widget_width - MARGIN*2}px`,
+        maxHeight: `${node_height - MARGIN*2}px`,    // we're assuming we have the whole height of the node
+        width: `auto`,
+        height: `auto`,
+    }
+}
+
+app.registerExtension({
+    name: "the.unique,name",
+
+    async beforeRegisterNodeDef(nodeType, nodeData, app) {
+        if (nodeType.comfyClass=="HtmlNode") {
+
+            /* 
+            Hijack the onNodeCreated call to add our widget
+            */
+            const orig_nodeCreated = nodeType.prototype.onNodeCreated;
+            nodeType.prototype.onNodeCreated = function () {
+                orig_nodeCreated?.apply(this, arguments);
+
+                const widget = {
+                    type: "HTML",   // whatever
+                    name: "flying", // whatever
+                    draw(ctx, node, widget_width, y, widget_height) { 
+                        Object.assign(this.inputEl.style, get_position_style(ctx, widget_width, y, node.size[1])); // assign the required style when we are drawn
+                    },
+                };
+
+                /*
+                Create an html element and add it to the document.  
+                Look at $el in ui.js for all the options here
+                */
+                widget.inputEl = $el("img", { src: "http://127.0.0.1:8188/view?filename=misc-stained+glass_00001_.png&subfolder=2023-10-16&type=output" });
+                document.body.appendChild(widget.inputEl);
+
+                /*
+                Add the widget, make sure we clean up nicely, and we do not want to be serialized!
+                */
+                this.addCustomWidget(widget);
+                this.onRemoved = function () { widget.inputEl.remove(); };
+                this.serialize_widgets = false;
+
+            }
+        }
+    },
+})
+```
+
+```python
+class HtmlNode:
+    CATEGORY = "quicknodes"
+    @classmethod    
+    def INPUT_TYPES(s):
+        return { "required":{} }
+    RETURN_TYPES = ()
+    RETURN_NAMES = ()
+    FUNCTION = "func"
+    def func(self):
+        return ()
+```
+
+## Widgets that handle input and output
+
+A node plugin can provide a method `getCustomWidgets` to declare a widget that handles the datatype `CHEESE`
+
+```javascript
+  getCustomWidgets(app) {
+    return {
+      CHEESE(node, inputName, inputData, app) { // We return an object containing a field CHEESE which has a function (taking node, name, data, app)
+         const widget = /* see below */;        // that creates a widget
+         widget.something = something;          // maybe adds stuff to it
+         node.addCustomWidget(widget);          // adds it to the node
+         return  widget;                        // and returns it.
+      } 
+    }
+  },
+```
+
+We can then use `CHEESE` in inputs and outputs.
+
+```python
+    "required": { "slice": ("CHEESE",),     
+```
+
+A custom widget can probably have lots of fields, but here are some to start with:
+
+```javascript
+const widget = {
+    type: inputData[0],       // the type, CHEESE
+    name: inputName,          // the name, slice
+    size: [128,128],          // a default size
+    draw(ctx, node, width, y) {
+                              // a method to draw the widget (ctx is a CanvasRenderingContext2D)
+    },
+    computeSize(...args) {    
+       return [128,128];      // a method to compute the current size of the widget
+    },
+    async serializeValue(nodeId,widgetIndex) {
+       return "Data That Goes to the Python Side";
+    }
+}
+```
+
+Looking at [litegraph.js](https://github.com/jagenjo/litegraph.js) will give you more info on node widgets.
+
+---
+Path: deploying.md
+---
+# How to deploy your custom node
+
+Custom nodes are loaded by ComfyUI based on the `NODE_CLASS_MAPPINGS` attribute, which is a dictionary with a globaly unique node name as the key, and the custom node type as the value. Optionally, you can also provide a `NODE_DISPLAY_NAME_MAPPINGS` which maps the unique node name to a display name.
+
+If you have something really simple, you can just put the python file in the custom_nodes directory, and add
+
+```python
+NODE_CLASS_MAPPINGS = { "my unique name" : SimpleCustomNode }
+NODE_DISPLAY_NAME_MAPPINGS = { "my unique name" : "Image inverter" }
+```
+
+Here's a screenshot of it working...
+![screenshot](images/invert.png)
+
+
+But it's better practice for custom nodes to be in their own subdirectories (and if you're going to deploy them through git that's how they'll end up), in which case you need to add an `__init__.py` file, which will look like this:
+
+```python
+from .simple_source_file import SIMPLE_CUSTOM_NODE
+NODE_CLASS_MAPPINGS = { "my unique name" : SimpleCustomNode }
+NODE_DISPLAY_NAME_MAPPINGS = { "my unique name" : "Image inverter" }
+__all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
+```
+
+Not sure what an `__init__.py` file is? It's what python loads when a module (directory) gets imported. For custom nodes you just need to know that you create a directory (in `custom_nodes`), and in that directory you have your source code file, and the __init__.py with the code above in. It doesn't need anything else (for now).
+
+
+---
+Path: Home.md
+---
+# Comfy Custom Node How-To
+An unofficial, practical, collaborative Q&A to getting started developing custom nodes for ComfyUI
+
+*Unofficial* - this guide isn't from the author(s) of ComfyUI. 
+
+*Practical* - the guide favours the practical over the formal or comprehensive.
+
+*Collaborative* - I'm kicking it off, but if others don't join in the effort I'll probably give up!
+
+*Q&A* - The form is (at least to start with) expected to be vaguely question and answer-like, using github issues to track open questions.
+
+## The Q&A
+
+[Q&A](./aaa_index)
+
+
+---
+Path: execution_order.md
+---
+# Node execution order
+
+[Tiny Terra Nodes](https://github.com/TinyTerra/ComfyUI_tinyterraNodes) adds 'Show Execution Order (ttN)' to the node right-click context menu Toggles execution order flags on node corners (and does lots of other things as well!)
+
+Something you might want to read is [this writeup](https://github.com/rgthree/rgthree-comfy#to-understand-muting-is-to-understand-the-graph-flow)
+
+
+---
+Path: ui_2.md
+---
+# More on UI extension
+
+I'm indebted to the author of [ttN](https://github.com/TinyTerra/ComfyUI_tinyterraNodes) for writing really clear code that I learned a lot from...
+
+## Adding to the node menu
+
+In the init() of your extension (code summarized from ttN)
+
+```javascript
+	LGraphCanvas.prototype.myFunction = function(node) {  // add a function to the LGraphCanvas prototype so all nodes get it
+		// do something to the node
+	}
+
+	const getNodeMenuOptions = LGraphCanvas.prototype.getNodeMenuOptions;   // store the existing method
+	LGraphCanvas.prototype.getNodeMenuOptions = function (node) {           // replace it
+		const options = getNodeMenuOptions.apply(this, arguments);      // start by calling the stored one
+		node.setDirtyCanvas(true, true);                                // force a redraw of (foreground, background)
+		options.splice(options.length - 1, 0,                           // splice a new option in at the end 
+			{
+				content: "My Menu Option",                                      // with a name
+				callback: () => { LGraphCanvas.prototype.myFunction(node) ; }   // and the callback 
+			},
+                	null                                                    // a divider
+		);
+		return options;                                                 // and return the options
+	};  
+```
+
+---
+Path: simple_node.md
+---
+# A really simple custom node explained
+
+Here's a custom node which has one (image) input and one (image) output, and simply inverts the image.
+
+```python
+class SimpleCustomNode:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": { "image_in" : ("IMAGE", {}) },
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image_out",)
+    FUNCTION = "invert"
+    CATEGORY = "examples"
+
+    def invert(self, image_in):
+        image_out = 1 - image_in
+        return (image_out,)
+```
+
+The code defines the inputs (`INPUT_TYPES`), the outputs (`RETURN_TYPES` and `RETURN_NAMES`), the actual function (`FUNCTION` and `invert`), and where to find it in the add nodes menu (`CATEGORY`).
+
+`CATEGORY` is where the node will be found in the ComfyUI 'Add Node' menu. So the example above will put the custom node under a menu item 'examples'. You can do a path to get submenus (like `CATEGORY = "examples/simple"` will make a submenu simple inside the menu examples (like "latent/inpaint" in the built in nodes).
+
+`FUNCTION` is the name of the function that the node will call when it is executed (in this case, `invert`). 
+
+`RETURN_TYPES` is a tuple of strings that specify the [data type](./data_types) of the outputs. Notice that trailing comma in `("IMAGE",)`? That's because python would interpret `("IMAGE")` as a string, and then when that gets treated as an interator, it would give `"I"`, then `"M"`, then...
+
+`RETURN_NAMES` is a tuple of string that specify the name of the outputs. It's optional - if you don't provide `RETURN_NAMES`, `RETURN_TYPES` is used.
+
+`INPUT_TYPES` specifies the inputs, and this is the only complicated bit. Notice that it's a `@classmethod`. The method returns a dictionary which must contain the key `required`, and may also include `optional` and `hidden`. Each of these keys has, as it's value, another dictionary. This inner dictionary has one key-value pair for each input - the key are the names of the input nodes, and the values are a tuple (str, dict), where the string is the type of the input node, and the dict provides additional parameters (things like default values, min and max, etc..)
+
+So in the example we specify one required input, named `image_in`, which is an IMAGE (for which there are no additional parameters).
+
+Then there's the function itself: `invert` (as named in the `FUNCTION` class attribute). It will be passed keyword arguments with names that match the input names specified in `INPUT_TYPES` - so it's `invert(self, image_in)` because `image_in` was a key in the dictionary INPUT_TYPES returned. Required inputs will always be provided, optional ones will be provided if the input had something attached to it, hidden inputs will be provided if they are available.
+
+The function returns a tuple matching (in order) the `RETURN_TYPES`. Again, notice the trailing comma!
+
+That's it. Now just [deploy it](./deploying).
+
+
+---
+Path: js_internals_prompt.md
+---
+# The prompt object
+
+The prompt object is the thing that gets sent by the JavaScript to the backend server.
+
+## Getting the prompt
+
+The relevant call is the async function
+```javascript
+app.graphToPrompt();
+```
+
+So to see what the prompt would be for the current workflow, you can await it:
+```javascript
+    const p = structuredClone(await app.graphToPrompt());
+```
+I'm not sure if the `structuredClone` is essential, but doing it ensures that if you do make changes they are only to your copy, not to any underlying objects - and since the underlying code may change in future releases, it's better to be safe.
+
+If you want to change the prompt that gets sent, then hijack this call
+```javascript
+	async setup() {
+        /*
+        The graphToPrompt method is called when the app is going to send a prompt to the server.
+        We hijack it, call the original, and return a modified copy.
+        */
+        _original_graphToPrompt = app.graphToPrompt;
+        app.graphToPrompt = async function () {
+            const p = StructuredClone(await _original_graphToPrompt.apply(app));
+                     // edit p
+            return p;
+        }
+```
+
+## What's in the prompt?
+
+As always, the best answer is to add a breakpoint in your browser code inspector and take a look! 
+
+`p` contains two things: `p.output` and `p.workflow`.
+
+### p.output
+
+A list of all nodes indexed by node_id, containing the values of all the *inputs* to the node. Yes, a list of the inputs is in an object called `output`. Go figure.
+```javascript
+p.output[node_id].class_type  // string of the unique name of the node class (from the python)
+p.output.inputs[input_name]   // the value of the widget
+                              // OR a list indicating the node this input is connected to [node_id_as_string, output_slot]
+                              // OR undefined for unconnected input
+```
+
+### p.workflow
+
+The workflow.
+```javascript
+p.workflow.config        // not sure - seems to be empty
+p.workflow.extra         // not sure - seems to be empty
+p.workflow.groups                // a list of groups
+p.workflow.groups[n].bounding    // list length 4 for the bounding box - I think its [x,y,w,h] in the current view
+                    .color
+                    .font_size
+                    .title
+
+p.workflow.last_link_id  // the highest numbered link in the links list (below)
+p.workflow.last_node_id  // the highest numbered node in the nodes list (below)
+
+p.workflow.links         // a list of links, each of which is a list containing:
+                         // [link_id, source_node_id, source_node_output_slot, destination_node_id, destination_node_input_slot, type]
+                         // type is a string, the rest are integers
+
+p.workflow.nodes         // a list of nodes (see below)
+p.workflow.version       // current value 0.4
+
+
+node = p.workflow.nodes[n]
+
+node.flags               // dunno
+node.id                  // id (as an integer)
+node.mode                // 0 = ALWAYS, 1 = ON_EVENT, 2 = NEVER, 3 = ON_TRIGGER, 4 = BYPASSED   (I've only seen 0 and 4 in Comfy)
+node.order               // position in execution order (zero index)
+node.outputs             // the outputs
+node.outputs[n].links    // array of integers which correspond to the link_id in p.workflow.links
+               .name
+               .slot_index
+               .type
+node.pos                 // position (relative to current view, I think)
+node.properties          // I've only seen 'Node node for S&R'
+node.size                // size!
+node.type                // string of the unique name of the node class (from the python)
+node.widgets_values      // array of the value of the widgets
+```
+
+
+
+
+
+---
+Path: hidden_inputs.md
+---
+# Hidden Inputs
+
+The dictionary returned by `INPUT_TYPES` has an optional key `'hidden'` which allows the node to receive information that doesn't come from the inputs to the node. There are three bits of information that can be accessed in this way, which are identified by the strings `PROMPT`, `EXTRA_PNGINFO` and `UNIQUE_ID`. To see all of them:
+
+```python
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required" : {},
+            "hidden" : { 
+                "prompt": "PROMPT",
+                "extra_info": "EXTRA_PNGINFO",
+                "id": "UNIQUE_ID",
+            }
+        }
+
+    def my_function(self, prompt:dict, extra_info:dict, id:int):
+        ...code...
+
+```
+
+Notice that the values for `hidden` are just `str`, not `tuple(str,dict)` as used for `required` and `optional`.
+
+`EXTRA_PNGINFO` is the metadata dictionary that will be saved with the image. You could choose to add custom metadata to it.
+
+`PROMPT` is the prompt (the job request sent by the front end). It's complicated, but you can use this to access (or even change) widget values or previous calculated outputs. You'll need to understand the order of execution to make that work. Put a breakpoint in the method and use your debugger to look at the dictionary.
+
+`UNIQUE_ID` the id of the node (determined by the UI and used in the prompt)
+
+---
+
+Some more details provided by Lerc:
+
+Hidden Inputs are inputs that do not need to be explicitly provided, They behave as inputs for the purposes of the execution function declared in the FUNCTION field of a node class.
+
+The values for the hidden inputs are automatically filled out.
+
+https://github.com/comfyanonymous/ComfyUI/blob/77c124c5a17534e347bdebbc1ace807d61416147/execution.py#L32
+```python
+        h = valid_inputs["hidden"]
+        for x in h:
+            if h[x] == "PROMPT":
+                input_data_all[x] = [prompt]
+            if h[x] == "EXTRA_PNGINFO":
+                if "extra_pnginfo" in extra_data:
+                    input_data_all[x] = [extra_data['extra_pnginfo']]
+            if h[x] == "UNIQUE_ID":
+                input_data_all[x] = [unique_id]
+```
+
+
+---
+Path: changing_widgets.md
+---
+# Changing the value of a widget
+
+Maybe you want a node to update its widgets. It's not very hard, but there's a gotcha: this won't change the values for this run (even if the node hasn't executed yet, the whole prompt has already been sent). That's why Comfy has control_after_generate not control_before_generate!
+
+```Javascript
+// somewhere inside a callback, perhaps in onExecuted, you want to set the value of a widget called `name_of_widget` to `new_value`
+	var w = this.widgets?.find((w) => w.name === 'name_of_widget')
+	if (w) {
+		w.value = new_value;
+		this.onResize?.(this.size);  // onResize redraws the node
+	}   
+```
+
+What if it's another node you want to change? If you know its id, it's pretty much the same:
+```Javascript
+	var node_id = parseInt(other_node_id);                             // if you have it as a string it needs to be an int
+	var node = this.graph._nodes_by_id[node_id];                       // for you to look it up like this
+	var w = node?.widgets.find((w) => w.name==='name_of_widget'); // and then it's just the same
+	if (w) { 
+		w.value = new_value; 
+		node.onResize?.(node.size);
+	} 
+```
+
+---
+Path: star_inputs.md
+---
+# Inputs that take anything
+
+An *optional* input (but not a required one) can be specified with type '*'
+
+```python
+    @classmethod
+    def INPUT_TYPES(s):
+        return { "required" : {}, "optional" : { 'anything' : ( "*", {} ) } }
+
+    def my_func(self, anything=None):
+        # anything will be passed if the node is connected
+```
+
+If you do this with a required node, you'll get a validation error.
+
+You can connect any output to an optional * node, but they don't play nicely with primitives or reroutes.
+
+---
+Path: data_types.md
+---
+# Comfy types and python objects
+
+| Comfy type | Python | Notes
+|-|-|-|
+|CLIP|comfy.sd.CLIP|See below|
+|CONDITIONING|a list of conditionings|see below|
+|FLOAT|float|As an input you can specify "min", "max", "default", "step"|
+|IMAGE|torch.Tensor with shape [B,H,W,C]| A batch of B images. C=3 (RGB) |
+|INT|int|As an input you can specify "min", "max", "default" |
+|LATENT|dict|'samples' is the key for the samples as a torch.Tensor|
+|MASK|torch.Tensor with shape [H,W] or [B,C,H,W]| Note the shape difference from IMAGE!|
+|MODEL|model_base.BaseModel or model_base.SD21UNCLIP|see model_base.py|
+|STRING|str|As an input type a "default" *must* be provided |
+|VAE|comfy.sd.VAE|See below|
+
+## Conditioning
+
+The object passed is a list, each element of which represents a conditioning (so the list can represent one or many conditionings). Each entry in the list is itself a list of length 2, containing a tensor (shape, at least for SDXL, [1,77,2048]) which holds the 77 conditioning vectors (I assume the first dimension is batch?), and a dictionary which initially holds the key `pooled_output` with, as a value, a tensor (shape [1,1280]). Other things can be added to this dictionary, to control the use of the conditioning; see the various `ConditioningSet....` nodes.
+
+## comfy.sd.CLIP
+
+See the definition in sd.py, and especially the way it is constructed in the load_checkpoint method. 
+
+A CLIP object holds:
+
+- a `comfy.model_patcher.ModelPatcher` that wraps a model and allows patches to be applied to it (see below)
+- the underlying clip which is generally either `sd2_clip.SD2ClipModel` or `sd1_clip.SD1ClipModel`
+- a tokenizer, which is generally either sd2_clip.SD2Tokenizer or sd1_clip.SD1Tokenizer
+- a layer_idx (used for clip_skip?)
+
+## comfy.sd.VAE
+
+A VAE is basically a wrapper for its `self.first_stage_model`, which is an `ldm.models.autoencoder.AutoencoderKL`
+
+## Patches
+
+Models in Comfy are (can be) wrapped in a ModelPatcher class which allows patches (such as LoRAs) to be applied to them; the ModelPatcher basically just holds the patches until the model is run, and then they are applied to the appropriate steps of the model. 
+
+---
+Path: input_dot_color.md
+---
+# Set the color of an input dot
+
+Maybe a bit niche, but... the most likely place you might want to do this is in onConnectionsChange, so:
+
+```javascript
+    const onConnectionsChange = nodeType.prototype.onConnectionsChange;
+    nodeType.prototype.onConnectionsChange = function (side,slot,connect,link_info,output) {
+        this.inputs[0].color_on = app.canvas.default_connection_color_byType["STRING"];  // set color_on on an input - here I'm reading the color for STRING from the color pallet
+        onConnectionsChange?.apply(side,slot,connect,link_info,output);                  // and then process the change (which includes a redraw)
+    }
+```
+
+---
+Path: aaa_index.md
+---
+# A shameless plug
+
+I've learned most of what I know by writing custom nodes and solving problems as I've gone along. I try to make the code I write as clean and clear as I can, if only so that I can read it in the future. So this is a shameless plug for some of my custom nodes - the excuse being that you can read the code and see how I did things.
+
+- [Use Everywhere](https://github.com/chrisgoringe/cg-use-everywhere) - nodes that edit the prompt before it gets sent to invisibly connect broadcast nodes to unconnected inputs. 
+- [Image picker](https://github.com/chrisgoringe/cg-image-picker) - nodes that pause the execution and let you choose an image to continue with. Illustrates adding a route to the api so the javascript can message the backend in mid execution.
+- [Variation Seeds](https://github.com/chrisgoringe/cg-noise) - aka noise hijack - illustrates a way of changing the core backend behaviour without rewriting the core code.
+
+# Unofficial practical collaborative Q&A on developing custom nodes
+
+If you've got a question not answered here, post it as an [issue](https://github.com/chrisgoringe/Comfy-Custom-Node-How-To/issues). The contents of this Q&A are things I've learned as I've got into custom node development. It's not systematic or complete. But I like working out how things work, so if you ask an interesting question it's likely I'll try to answer it!
+
+## Starting Points
+
+- ComfyUI uses nodes to do all the work of stable diffusion. It comes with lots of them out of the box, but if you want to do something that can't be done with one that already exists, you can create new nodes.
+- [ComfyUI-Manager](https://github.com/ltdrdata/ComfyUI-Manager) is your go-to for finding and installing custom nodes.
+- [ComfyUI dev on matrix](https://matrix.to/#/#comfyui_dev:matrix.org) is a friendly place to ask questions.
+
+## Writing a simple custom node
+
+In the ComfyUI repository, the folder `custom_nodes` you'll find `example_node.py.examples`. That's worth reading. 
+
+- [A simple custom node explained](./simple_node)
+- [Getting ComfyUI to load it](./deploying)
+
+## Going further
+
+`nodes.py` in the top level of the ComfyUI directory has the definitions of lots of the built in nodes. Look at the code for a node that does something a bit like you want.
+
+Here are some guides on how to do things that have been contributed:
+
+*Backend (python)*
+- [Hidden inputs](hidden_inputs)
+- [Subclassing custom nodes](./subclassing)
+- [What python objects represent the input and output types?](./data_types)
+
+*Stuff which (might) involve the UI (javascript)*
+- [What order are nodes executed in?](./execution_order)
+- [Inputs which take anything](./star_inputs)
+- [Custom data types](./custom_data_types)
+- Communicating between javascript and python
+  - From JavaScript to Python: [Add to the API](./api)
+  - From Python to Javascript: [Messages to nodes](./messages)
+
+*Extending the UI*
+- [Initial concepts in UI extension](./ui_1_starting)
+- [Some more advanced UI extension](./ui_2)
+- [Custom Widgets](./custom_widget)
+- [Getting control_after_generate](./control_after_generate)
+- [Changing the value of a widget](./changing_widgets)
+- [Adding and removing widgets](./remove_or_add_widget)
+- [Setting the color of an input dot](./input_dot_color)
+- [Adding to the canvas menu](./canvas_menu)
+
+*Javascript core internals*
+- [The prompt object](./js_internals_prompt)
+
+*Odds and Ends*
+- [Short questions and answers](./quick_questions)
+
+## Credits
+
+The following people have answered questions, or asked good ones, or made helpful suggestions, or written good clean code that I learned from. 
+
+Their inclusion here doesn't imply that they know about this wiki, or approve of it! Just that they have been part of making it happen, whether they know that or not :).
+
+- [chrisgoringe](https://github.com/chrisgoringe)
+- [Lerc](https://github.com/Lerc)
+- [pitzips](https://www.reddit.com/user/pitzips/)
+- @wasasquatch:matrix.org on [ComfyUI dev](https://matrix.to/#/#comfyui_dev:matrix.org)
+- [TinyTerra](https://github.com/TinyTerra)
+- [Poyojo](https://www.reddit.com/user/Poyojo/)
+- [drago87](https://github.com/drago87)
+
+---
+Path: remove_or_add_widget.md
+---
+# Dynamically adding and removing widgets
+
+## Adding a widget
+Suppose you want to add a widget to display some text... the code will look a bit like this (assuming a context where `this` is the node)
+
+```javascript
+import { ComfyWidgets } from "../../../scripts/widgets.js";
+//...
+	var w = this.widgets?.find((w) => w.name === "name_of_the_widget");  // see if it already exists
+	if (w === undefined) {
+		w = ComfyWidgets["STRING"](this, "name_of_the_widget", ["STRING", { multiline: true }], app).widget; // see description below
+		w.inputEl.readOnly = true;            // make it read only
+		w.inputEl.style.opacity = 0.6;        // any css styling you want
+		w.inputEl.style.fontSize = "9pt";
+	}
+	w.value = "Text to display";
+	this.onResize?.(this.size);                   // this will make it redraw
+```
+
+The main line is a call to a method in the file `scripts/widgets.js`, where there is
+```javascript
+export const ComfyWidgets = {
+//...
+	STRING(node, inputName, inputData, app) {
+// code that creates the widget as res and adds it to the node using node.addWidget or similar calls
+	return res;
+```
+Take a look - it's around line 318 at time of writing. 
+
+The first thing to notice is the parameters - it takes a parent node (`this` in our call), an input name, inputData, and a reference to the app. The `inputData` is the javascript equivalent of the `tuple(str, dict)` that you use to define an `INPUT_TYPE` in python.
+
+The other thing to notice is that what gets returned is an object which includes the widget as a `.widget` attribute. I haven't seen an example of what else might be included in res - in any case, our code just pulls out the `.widget` attribute.
+
+---
+
+## Deleting a widget
+
+Here's a function that will remove a named widget from a node if it exists:
+```javascript
+function remove_widget(node, widget_name) {
+    const w = node.widgets?.findIndex((w) => w.name === widget_name); // search for the widget name
+    if (w>=0) {                           // if we find it (if not, w = -1)
+        const wid = node.widgets[w];      // get the widget itself (w is the index)
+        node.widgets.splice(w,1);         // remove it
+        wid?.onRemove();                  // let the widget do any cleaning up
+        node.size = node.computeSize();   // work out what size the node should be now
+        node.setDirtyCanvas(true, true);  // mark for redrawing
+    }
+}
+```
+The last line there is an alternative (probably better) way of causing a node to be drawn - we mark its canvas as 'dirty' (the two parameters are foreground and background)
+
+---
+Path: custom_data_types.md
+---
+# Can I create my own data types?
+
+If you just want to pass python objects between two custom nodes, you don't have to do anything complicated. Just pick a (unique) string (say, CHEESE), and use it to describe the RETURN_TYPE and INPUT_TYPE. ComfyUI (both in the python backend, execution.py, and the JavaScript front end) just checks that the string is the same - so you'll be able to connect the nodes together, and your python object will be passed through.
+
+[drago87](https://github.com/chrisgoringe/Comfy-Custom-Node-How-To/issues/12) found that you need to do a forceInput if you want to use a custom type as a required input:
+```
+"required": {
+                "info": ("CHEESE",{"forceInput": True})
+            }
+```
+
+---
+
+If you want a widget that creates the new data type, you'll need a [custom widget](./custom_widgets). 
+
+---
+Path: .git/config
+---
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+	ignorecase = true
+	precomposeunicode = true
+[remote "origin"]
+	url = https://github.com/chrisgoringe/Comfy-Custom-Node-How-To.wiki.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+
+
+---
+Path: .git/HEAD
+---
+ref: refs/heads/master
+
+
+---
+Path: .git/description
+---
+Unnamed repository; edit this file 'description' to name the repository.
+
+
+---
+Path: .git/packed-refs
+---
+# pack-refs with: peeled fully-peeled sorted 
+5611f45743e1c3aff89ffc0affa87c1679c92138 refs/remotes/origin/master
+
+
+---
+Path: .git/info/exclude
+---
+# git ls-files --others --exclude-from=.git/info/exclude
+# Lines that start with '#' are comments.
+# For a project mostly in C, the following would be a good set of
+# exclude patterns (uncomment them if you want to use them):
+# *.[oa]
+# *~
+
+
+---
+Path: .git/logs/HEAD
+---
+0000000000000000000000000000000000000000 5611f45743e1c3aff89ffc0affa87c1679c92138 cian0 <cyril.icasiano@gmail.com> 1704208665 +0800	clone: from https://github.com/chrisgoringe/Comfy-Custom-Node-How-To.wiki.git
+
+
+---
+Path: .git/logs/refs/heads/master
+---
+0000000000000000000000000000000000000000 5611f45743e1c3aff89ffc0affa87c1679c92138 cian0 <cyril.icasiano@gmail.com> 1704208665 +0800	clone: from https://github.com/chrisgoringe/Comfy-Custom-Node-How-To.wiki.git
+
+
+---
+Path: .git/logs/refs/remotes/origin/HEAD
+---
+0000000000000000000000000000000000000000 5611f45743e1c3aff89ffc0affa87c1679c92138 cian0 <cyril.icasiano@gmail.com> 1704208665 +0800	clone: from https://github.com/chrisgoringe/Comfy-Custom-Node-How-To.wiki.git
+
+
+---
+Path: .git/hooks/commit-msg.sample
+---
+#!/bin/sh
+#
+# An example hook script to check the commit log message.
+# Called by "git commit" with one argument, the name of the file
+# that has the commit message.  The hook should exit with non-zero
+# status after issuing an appropriate message if it wants to stop the
+# commit.  The hook is allowed to edit the commit message file.
+#
+# To enable this hook, rename this file to "commit-msg".
+
+# Uncomment the below to add a Signed-off-by line to the message.
+# Doing this in a hook is a bad idea in general, but the prepare-commit-msg
+# hook is more suited to it.
+#
+# SOB=$(git var GIT_AUTHOR_IDENT | sed -n 's/^\(.*>\).*$/Signed-off-by: \1/p')
+# grep -qs "^$SOB" "$1" || echo "$SOB" >> "$1"
+
+# This example catches duplicate Signed-off-by lines.
+
+test "" = "$(grep '^Signed-off-by: ' "$1" |
+	 sort | uniq -c | sed -e '/^[ 	]*1[ 	]/d')" || {
+	echo >&2 Duplicate Signed-off-by lines.
+	exit 1
+}
+
+
+---
+Path: .git/hooks/pre-rebase.sample
+---
+#!/bin/sh
+#
+# Copyright (c) 2006, 2008 Junio C Hamano
+#
+# The "pre-rebase" hook is run just before "git rebase" starts doing
+# its job, and can prevent the command from running by exiting with
+# non-zero status.
+#
+# The hook is called with the following parameters:
+#
+# $1 -- the upstream the series was forked from.
+# $2 -- the branch being rebased (or empty when rebasing the current branch).
+#
+# This sample shows how to prevent topic branches that are already
+# merged to 'next' branch from getting rebased, because allowing it
+# would result in rebasing already published history.
+
+publish=next
+basebranch="$1"
+if test "$#" = 2
+then
+	topic="refs/heads/$2"
+else
+	topic=`git symbolic-ref HEAD` ||
+	exit 0 ;# we do not interrupt rebasing detached HEAD
+fi
+
+case "$topic" in
+refs/heads/??/*)
+	;;
+*)
+	exit 0 ;# we do not interrupt others.
+	;;
+esac
+
+# Now we are dealing with a topic branch being rebased
+# on top of master.  Is it OK to rebase it?
+
+# Does the topic really exist?
+git show-ref -q "$topic" || {
+	echo >&2 "No such branch $topic"
+	exit 1
+}
+
+# Is topic fully merged to master?
+not_in_master=`git rev-list --pretty=oneline ^master "$topic"`
+if test -z "$not_in_master"
+then
+	echo >&2 "$topic is fully merged to master; better remove it."
+	exit 1 ;# we could allow it, but there is no point.
+fi
+
+# Is topic ever merged to next?  If so you should not be rebasing it.
+only_next_1=`git rev-list ^master "^$topic" ${publish} | sort`
+only_next_2=`git rev-list ^master           ${publish} | sort`
+if test "$only_next_1" = "$only_next_2"
+then
+	not_in_topic=`git rev-list "^$topic" master`
+	if test -z "$not_in_topic"
+	then
+		echo >&2 "$topic is already up to date with master"
+		exit 1 ;# we could allow it, but there is no point.
+	else
+		exit 0
+	fi
+else
+	not_in_next=`git rev-list --pretty=oneline ^${publish} "$topic"`
+	/opt/local/bin/perl5.34 -e '
+		my $topic = $ARGV[0];
+		my $msg = "* $topic has commits already merged to public branch:\n";
+		my (%not_in_next) = map {
+			/^([0-9a-f]+) /;
+			($1 => 1);
+		} split(/\n/, $ARGV[1]);
+		for my $elem (map {
+				/^([0-9a-f]+) (.*)$/;
+				[$1 => $2];
+			} split(/\n/, $ARGV[2])) {
+			if (!exists $not_in_next{$elem->[0]}) {
+				if ($msg) {
+					print STDERR $msg;
+					undef $msg;
+				}
+				print STDERR " $elem->[1]\n";
+			}
+		}
+	' "$topic" "$not_in_next" "$not_in_master"
+	exit 1
+fi
+
+<<\DOC_END
+
+This sample hook safeguards topic branches that have been
+published from being rewound.
+
+The workflow assumed here is:
+
+ * Once a topic branch forks from "master", "master" is never
+   merged into it again (either directly or indirectly).
+
+ * Once a topic branch is fully cooked and merged into "master",
+   it is deleted.  If you need to build on top of it to correct
+   earlier mistakes, a new topic branch is created by forking at
+   the tip of the "master".  This is not strictly necessary, but
+   it makes it easier to keep your history simple.
+
+ * Whenever you need to test or publish your changes to topic
+   branches, merge them into "next" branch.
+
+The script, being an example, hardcodes the publish branch name
+to be "next", but it is trivial to make it configurable via
+$GIT_DIR/config mechanism.
+
+With this workflow, you would want to know:
+
+(1) ... if a topic branch has ever been merged to "next".  Young
+    topic branches can have stupid mistakes you would rather
+    clean up before publishing, and things that have not been
+    merged into other branches can be easily rebased without
+    affecting other people.  But once it is published, you would
+    not want to rewind it.
+
+(2) ... if a topic branch has been fully merged to "master".
+    Then you can delete it.  More importantly, you should not
+    build on top of it -- other people may already want to
+    change things related to the topic as patches against your
+    "master", so if you need further changes, it is better to
+    fork the topic (perhaps with the same name) afresh from the
+    tip of "master".
+
+Let's look at this example:
+
+		   o---o---o---o---o---o---o---o---o---o "next"
+		  /       /           /           /
+		 /   a---a---b A     /           /
+		/   /               /           /
+	       /   /   c---c---c---c B         /
+	      /   /   /             \         /
+	     /   /   /   b---b C     \       /
+	    /   /   /   /             \     /
+    ---o---o---o---o---o---o---o---o---o---o---o "master"
+
+
+A, B and C are topic branches.
+
+ * A has one fix since it was merged up to "next".
+
+ * B has finished.  It has been fully merged up to "master" and "next",
+   and is ready to be deleted.
+
+ * C has not merged to "next" at all.
+
+We would want to allow C to be rebased, refuse A, and encourage
+B to be deleted.
+
+To compute (1):
+
+	git rev-list ^master ^topic next
+	git rev-list ^master        next
+
+	if these match, topic has not merged in next at all.
+
+To compute (2):
+
+	git rev-list master..topic
+
+	if this is empty, it is fully merged to "master".
+
+DOC_END
+
+
+---
+Path: .git/hooks/pre-commit.sample
+---
+#!/bin/sh
+#
+# An example hook script to verify what is about to be committed.
+# Called by "git commit" with no arguments.  The hook should
+# exit with non-zero status after issuing an appropriate message if
+# it wants to stop the commit.
+#
+# To enable this hook, rename this file to "pre-commit".
+
+if git rev-parse --verify HEAD >/dev/null 2>&1
+then
+	against=HEAD
+else
+	# Initial commit: diff against an empty tree object
+	against=$(git hash-object -t tree /dev/null)
+fi
+
+# If you want to allow non-ASCII filenames set this variable to true.
+allownonascii=$(git config --type=bool hooks.allownonascii)
+
+# Redirect output to stderr.
+exec 1>&2
+
+# Cross platform projects tend to avoid non-ASCII filenames; prevent
+# them from being added to the repository. We exploit the fact that the
+# printable range starts at the space character and ends with tilde.
+if [ "$allownonascii" != "true" ] &&
+	# Note that the use of brackets around a tr range is ok here, (it's
+	# even required, for portability to Solaris 10's /usr/bin/tr), since
+	# the square bracket bytes happen to fall in the designated range.
+	test $(git diff --cached --name-only --diff-filter=A -z $against |
+	  LC_ALL=C tr -d '[ -~]\0' | wc -c) != 0
+then
+	cat <<\EOF
+Error: Attempt to add a non-ASCII file name.
+
+This can cause problems if you want to work with people on other platforms.
+
+To be portable it is advisable to rename the file.
+
+If you know what you are doing you can disable this check using:
+
+  git config hooks.allownonascii true
+EOF
+	exit 1
+fi
+
+# If there are whitespace errors, print the offending file names and fail.
+exec git diff-index --check --cached $against --
+
+
+---
+Path: .git/hooks/applypatch-msg.sample
+---
+#!/bin/sh
+#
+# An example hook script to check the commit log message taken by
+# applypatch from an e-mail message.
+#
+# The hook should exit with non-zero status after issuing an
+# appropriate message if it wants to stop the commit.  The hook is
+# allowed to edit the commit message file.
+#
+# To enable this hook, rename this file to "applypatch-msg".
+
+. git-sh-setup
+commitmsg="$(git rev-parse --git-path hooks/commit-msg)"
+test -x "$commitmsg" && exec "$commitmsg" ${1+"$@"}
+:
+
+
+---
+Path: .git/hooks/fsmonitor-watchman.sample
+---
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use IPC::Open2;
+
+# An example hook script to integrate Watchman
+# (https://facebook.github.io/watchman/) with git to speed up detecting
+# new and modified files.
+#
+# The hook is passed a version (currently 2) and last update token
+# formatted as a string and outputs to stdout a new update token and
+# all files that have been modified since the update token. Paths must
+# be relative to the root of the working tree and separated by a single NUL.
+#
+# To enable this hook, rename this file to "query-watchman" and set
+# 'git config core.fsmonitor .git/hooks/query-watchman'
+#
+my ($version, $last_update_token) = @ARGV;
+
+# Uncomment for debugging
+# print STDERR "$0 $version $last_update_token\n";
+
+# Check the hook interface version
+if ($version ne 2) {
+	die "Unsupported query-fsmonitor hook version '$version'.\n" .
+	    "Falling back to scanning...\n";
+}
+
+my $git_work_tree = get_working_dir();
+
+my $retry = 1;
+
+my $json_pkg;
+eval {
+	require JSON::XS;
+	$json_pkg = "JSON::XS";
+	1;
+} or do {
+	require JSON::PP;
+	$json_pkg = "JSON::PP";
+};
+
+launch_watchman();
+
+sub launch_watchman {
+	my $o = watchman_query();
+	if (is_work_tree_watched($o)) {
+		output_result($o->{clock}, @{$o->{files}});
+	}
+}
+
+sub output_result {
+	my ($clockid, @files) = @_;
+
+	# Uncomment for debugging watchman output
+	# open (my $fh, ">", ".git/watchman-output.out");
+	# binmode $fh, ":utf8";
+	# print $fh "$clockid\n@files\n";
+	# close $fh;
+
+	binmode STDOUT, ":utf8";
+	print $clockid;
+	print "\0";
+	local $, = "\0";
+	print @files;
+}
+
+sub watchman_clock {
+	my $response = qx/watchman clock "$git_work_tree"/;
+	die "Failed to get clock id on '$git_work_tree'.\n" .
+		"Falling back to scanning...\n" if $? != 0;
+
+	return $json_pkg->new->utf8->decode($response);
+}
+
+sub watchman_query {
+	my $pid = open2(\*CHLD_OUT, \*CHLD_IN, 'watchman -j --no-pretty')
+	or die "open2() failed: $!\n" .
+	"Falling back to scanning...\n";
+
+	# In the query expression below we're asking for names of files that
+	# changed since $last_update_token but not from the .git folder.
+	#
+	# To accomplish this, we're using the "since" generator to use the
+	# recency index to select candidate nodes and "fields" to limit the
+	# output to file names only. Then we're using the "expression" term to
+	# further constrain the results.
+	my $last_update_line = "";
+	if (substr($last_update_token, 0, 1) eq "c") {
+		$last_update_token = "\"$last_update_token\"";
+		$last_update_line = qq[\n"since": $last_update_token,];
+	}
+	my $query = <<"	END";
+		["query", "$git_work_tree", {$last_update_line
+			"fields": ["name"],
+			"expression": ["not", ["dirname", ".git"]]
+		}]
+	END
+
+	# Uncomment for debugging the watchman query
+	# open (my $fh, ">", ".git/watchman-query.json");
+	# print $fh $query;
+	# close $fh;
+
+	print CHLD_IN $query;
+	close CHLD_IN;
+	my $response = do {local $/; <CHLD_OUT>};
+
+	# Uncomment for debugging the watch response
+	# open ($fh, ">", ".git/watchman-response.json");
+	# print $fh $response;
+	# close $fh;
+
+	die "Watchman: command returned no output.\n" .
+	"Falling back to scanning...\n" if $response eq "";
+	die "Watchman: command returned invalid output: $response\n" .
+	"Falling back to scanning...\n" unless $response =~ /^\{/;
+
+	return $json_pkg->new->utf8->decode($response);
+}
+
+sub is_work_tree_watched {
+	my ($output) = @_;
+	my $error = $output->{error};
+	if ($retry > 0 and $error and $error =~ m/unable to resolve root .* directory (.*) is not watched/) {
+		$retry--;
+		my $response = qx/watchman watch "$git_work_tree"/;
+		die "Failed to make watchman watch '$git_work_tree'.\n" .
+		    "Falling back to scanning...\n" if $? != 0;
+		$output = $json_pkg->new->utf8->decode($response);
+		$error = $output->{error};
+		die "Watchman: $error.\n" .
+		"Falling back to scanning...\n" if $error;
+
+		# Uncomment for debugging watchman output
+		# open (my $fh, ">", ".git/watchman-output.out");
+		# close $fh;
+
+		# Watchman will always return all files on the first query so
+		# return the fast "everything is dirty" flag to git and do the
+		# Watchman query just to get it over with now so we won't pay
+		# the cost in git to look up each individual file.
+		my $o = watchman_clock();
+		$error = $output->{error};
+
+		die "Watchman: $error.\n" .
+		"Falling back to scanning...\n" if $error;
+
+		output_result($o->{clock}, ("/"));
+		$last_update_token = $o->{clock};
+
+		eval { launch_watchman() };
+		return 0;
+	}
+
+	die "Watchman: $error.\n" .
+	"Falling back to scanning...\n" if $error;
+
+	return 1;
+}
+
+sub get_working_dir {
+	my $working_dir;
+	if ($^O =~ 'msys' || $^O =~ 'cygwin') {
+		$working_dir = Win32::GetCwd();
+		$working_dir =~ tr/\\/\//;
+	} else {
+		require Cwd;
+		$working_dir = Cwd::cwd();
+	}
+
+	return $working_dir;
+}
+
+
+---
+Path: .git/hooks/pre-receive.sample
+---
+#!/bin/sh
+#
+# An example hook script to make use of push options.
+# The example simply echoes all push options that start with 'echoback='
+# and rejects all pushes when the "reject" push option is used.
+#
+# To enable this hook, rename this file to "pre-receive".
+
+if test -n "$GIT_PUSH_OPTION_COUNT"
+then
+	i=0
+	while test "$i" -lt "$GIT_PUSH_OPTION_COUNT"
+	do
+		eval "value=\$GIT_PUSH_OPTION_$i"
+		case "$value" in
+		echoback=*)
+			echo "echo from the pre-receive-hook: ${value#*=}" >&2
+			;;
+		reject)
+			exit 1
+		esac
+		i=$((i + 1))
+	done
+fi
+
+
+---
+Path: .git/hooks/prepare-commit-msg.sample
+---
+#!/bin/sh
+#
+# An example hook script to prepare the commit log message.
+# Called by "git commit" with the name of the file that has the
+# commit message, followed by the description of the commit
+# message's source.  The hook's purpose is to edit the commit
+# message file.  If the hook fails with a non-zero status,
+# the commit is aborted.
+#
+# To enable this hook, rename this file to "prepare-commit-msg".
+
+# This hook includes three examples. The first one removes the
+# "# Please enter the commit message..." help message.
+#
+# The second includes the output of "git diff --name-status -r"
+# into the message, just before the "git status" output.  It is
+# commented because it doesn't cope with --amend or with squashed
+# commits.
+#
+# The third example adds a Signed-off-by line to the message, that can
+# still be edited.  This is rarely a good idea.
+
+COMMIT_MSG_FILE=$1
+COMMIT_SOURCE=$2
+SHA1=$3
+
+/opt/local/bin/perl5.34 -i.bak -ne 'print unless(m/^. Please enter the commit message/..m/^#$/)' "$COMMIT_MSG_FILE"
+
+# case "$COMMIT_SOURCE,$SHA1" in
+#  ,|template,)
+#    /opt/local/bin/perl5.34 -i.bak -pe '
+#       print "\n" . `git diff --cached --name-status -r`
+# 	 if /^#/ && $first++ == 0' "$COMMIT_MSG_FILE" ;;
+#  *) ;;
+# esac
+
+# SOB=$(git var GIT_COMMITTER_IDENT | sed -n 's/^\(.*>\).*$/Signed-off-by: \1/p')
+# git interpret-trailers --in-place --trailer "$SOB" "$COMMIT_MSG_FILE"
+# if test -z "$COMMIT_SOURCE"
+# then
+#   /opt/local/bin/perl5.34 -i.bak -pe 'print "\n" if !$first_line++' "$COMMIT_MSG_FILE"
+# fi
+
+
+---
+Path: .git/hooks/post-update.sample
+---
+#!/bin/sh
+#
+# An example hook script to prepare a packed repository for use over
+# dumb transports.
+#
+# To enable this hook, rename this file to "post-update".
+
+exec git update-server-info
+
+
+---
+Path: .git/hooks/pre-merge-commit.sample
+---
+#!/bin/sh
+#
+# An example hook script to verify what is about to be committed.
+# Called by "git merge" with no arguments.  The hook should
+# exit with non-zero status after issuing an appropriate message to
+# stderr if it wants to stop the merge commit.
+#
+# To enable this hook, rename this file to "pre-merge-commit".
+
+. git-sh-setup
+test -x "$GIT_DIR/hooks/pre-commit" &&
+        exec "$GIT_DIR/hooks/pre-commit"
+:
+
+
+---
+Path: .git/hooks/pre-applypatch.sample
+---
+#!/bin/sh
+#
+# An example hook script to verify what is about to be committed
+# by applypatch from an e-mail message.
+#
+# The hook should exit with non-zero status after issuing an
+# appropriate message if it wants to stop the commit.
+#
+# To enable this hook, rename this file to "pre-applypatch".
+
+. git-sh-setup
+precommit="$(git rev-parse --git-path hooks/pre-commit)"
+test -x "$precommit" && exec "$precommit" ${1+"$@"}
+:
+
+
+---
+Path: .git/hooks/pre-push.sample
+---
+#!/bin/sh
+
+# An example hook script to verify what is about to be pushed.  Called by "git
+# push" after it has checked the remote status, but before anything has been
+# pushed.  If this script exits with a non-zero status nothing will be pushed.
+#
+# This hook is called with the following parameters:
+#
+# $1 -- Name of the remote to which the push is being done
+# $2 -- URL to which the push is being done
+#
+# If pushing without using a named remote those arguments will be equal.
+#
+# Information about the commits which are being pushed is supplied as lines to
+# the standard input in the form:
+#
+#   <local ref> <local oid> <remote ref> <remote oid>
+#
+# This sample shows how to prevent push of commits where the log message starts
+# with "WIP" (work in progress).
+
+remote="$1"
+url="$2"
+
+zero=$(git hash-object --stdin </dev/null | tr '[0-9a-f]' '0')
+
+while read local_ref local_oid remote_ref remote_oid
+do
+	if test "$local_oid" = "$zero"
+	then
+		# Handle delete
+		:
+	else
+		if test "$remote_oid" = "$zero"
+		then
+			# New branch, examine all commits
+			range="$local_oid"
+		else
+			# Update to existing branch, examine new commits
+			range="$remote_oid..$local_oid"
+		fi
+
+		# Check for WIP commit
+		commit=$(git rev-list -n 1 --grep '^WIP' "$range")
+		if test -n "$commit"
+		then
+			echo >&2 "Found WIP commit in $local_ref, not pushing"
+			exit 1
+		fi
+	fi
+done
+
+exit 0
+
+
+---
+Path: .git/hooks/update.sample
+---
+#!/bin/sh
+#
+# An example hook script to block unannotated tags from entering.
+# Called by "git receive-pack" with arguments: refname sha1-old sha1-new
+#
+# To enable this hook, rename this file to "update".
+#
+# Config
+# ------
+# hooks.allowunannotated
+#   This boolean sets whether unannotated tags will be allowed into the
+#   repository.  By default they won't be.
+# hooks.allowdeletetag
+#   This boolean sets whether deleting tags will be allowed in the
+#   repository.  By default they won't be.
+# hooks.allowmodifytag
+#   This boolean sets whether a tag may be modified after creation. By default
+#   it won't be.
+# hooks.allowdeletebranch
+#   This boolean sets whether deleting branches will be allowed in the
+#   repository.  By default they won't be.
+# hooks.denycreatebranch
+#   This boolean sets whether remotely creating branches will be denied
+#   in the repository.  By default this is allowed.
+#
+
+# --- Command line
+refname="$1"
+oldrev="$2"
+newrev="$3"
+
+# --- Safety check
+if [ -z "$GIT_DIR" ]; then
+	echo "Don't run this script from the command line." >&2
+	echo " (if you want, you could supply GIT_DIR then run" >&2
+	echo "  $0 <ref> <oldrev> <newrev>)" >&2
+	exit 1
+fi
+
+if [ -z "$refname" -o -z "$oldrev" -o -z "$newrev" ]; then
+	echo "usage: $0 <ref> <oldrev> <newrev>" >&2
+	exit 1
+fi
+
+# --- Config
+allowunannotated=$(git config --type=bool hooks.allowunannotated)
+allowdeletebranch=$(git config --type=bool hooks.allowdeletebranch)
+denycreatebranch=$(git config --type=bool hooks.denycreatebranch)
+allowdeletetag=$(git config --type=bool hooks.allowdeletetag)
+allowmodifytag=$(git config --type=bool hooks.allowmodifytag)
+
+# check for no description
+projectdesc=$(sed -e '1q' "$GIT_DIR/description")
+case "$projectdesc" in
+"Unnamed repository"* | "")
+	echo "*** Project description file hasn't been set" >&2
+	exit 1
+	;;
+esac
+
+# --- Check types
+# if $newrev is 0000...0000, it's a commit to delete a ref.
+zero=$(git hash-object --stdin </dev/null | tr '[0-9a-f]' '0')
+if [ "$newrev" = "$zero" ]; then
+	newrev_type=delete
+else
+	newrev_type=$(git cat-file -t $newrev)
+fi
+
+case "$refname","$newrev_type" in
+	refs/tags/*,commit)
+		# un-annotated tag
+		short_refname=${refname##refs/tags/}
+		if [ "$allowunannotated" != "true" ]; then
+			echo "*** The un-annotated tag, $short_refname, is not allowed in this repository" >&2
+			echo "*** Use 'git tag [ -a | -s ]' for tags you want to propagate." >&2
+			exit 1
+		fi
+		;;
+	refs/tags/*,delete)
+		# delete tag
+		if [ "$allowdeletetag" != "true" ]; then
+			echo "*** Deleting a tag is not allowed in this repository" >&2
+			exit 1
+		fi
+		;;
+	refs/tags/*,tag)
+		# annotated tag
+		if [ "$allowmodifytag" != "true" ] && git rev-parse $refname > /dev/null 2>&1
+		then
+			echo "*** Tag '$refname' already exists." >&2
+			echo "*** Modifying a tag is not allowed in this repository." >&2
+			exit 1
+		fi
+		;;
+	refs/heads/*,commit)
+		# branch
+		if [ "$oldrev" = "$zero" -a "$denycreatebranch" = "true" ]; then
+			echo "*** Creating a branch is not allowed in this repository" >&2
+			exit 1
+		fi
+		;;
+	refs/heads/*,delete)
+		# delete branch
+		if [ "$allowdeletebranch" != "true" ]; then
+			echo "*** Deleting a branch is not allowed in this repository" >&2
+			exit 1
+		fi
+		;;
+	refs/remotes/*,commit)
+		# tracking branch
+		;;
+	refs/remotes/*,delete)
+		# delete tracking branch
+		if [ "$allowdeletebranch" != "true" ]; then
+			echo "*** Deleting a tracking branch is not allowed in this repository" >&2
+			exit 1
+		fi
+		;;
+	*)
+		# Anything else (is there anything else?)
+		echo "*** Update hook: unknown type of update to ref $refname of type $newrev_type" >&2
+		exit 1
+		;;
+esac
+
+# --- Finished
+exit 0
+
+
+---
+Path: .git/hooks/push-to-checkout.sample
+---
+#!/bin/sh
+
+# An example hook script to update a checked-out tree on a git push.
+#
+# This hook is invoked by git-receive-pack(1) when it reacts to git
+# push and updates reference(s) in its repository, and when the push
+# tries to update the branch that is currently checked out and the
+# receive.denyCurrentBranch configuration variable is set to
+# updateInstead.
+#
+# By default, such a push is refused if the working tree and the index
+# of the remote repository has any difference from the currently
+# checked out commit; when both the working tree and the index match
+# the current commit, they are updated to match the newly pushed tip
+# of the branch. This hook is to be used to override the default
+# behaviour; however the code below reimplements the default behaviour
+# as a starting point for convenient modification.
+#
+# The hook receives the commit with which the tip of the current
+# branch is going to be updated:
+commit=$1
+
+# It can exit with a non-zero status to refuse the push (when it does
+# so, it must not modify the index or the working tree).
+die () {
+	echo >&2 "$*"
+	exit 1
+}
+
+# Or it can make any necessary changes to the working tree and to the
+# index to bring them to the desired state when the tip of the current
+# branch is updated to the new commit, and exit with a zero status.
+#
+# For example, the hook can simply run git read-tree -u -m HEAD "$1"
+# in order to emulate git fetch that is run in the reverse direction
+# with git push, as the two-tree form of git read-tree -u -m is
+# essentially the same as git switch or git checkout that switches
+# branches while keeping the local changes in the working tree that do
+# not interfere with the difference between the branches.
+
+# The below is a more-or-less exact translation to shell of the C code
+# for the default behaviour for git's push-to-checkout hook defined in
+# the push_to_deploy() function in builtin/receive-pack.c.
+#
+# Note that the hook will be executed from the repository directory,
+# not from the working tree, so if you want to perform operations on
+# the working tree, you will have to adapt your code accordingly, e.g.
+# by adding "cd .." or using relative paths.
+
+if ! git update-index -q --ignore-submodules --refresh
+then
+	die "Up-to-date check failed"
+fi
+
+if ! git diff-files --quiet --ignore-submodules --
+then
+	die "Working directory has unstaged changes"
+fi
+
+# This is a rough translation of:
+#
+#   head_has_history() ? "HEAD" : EMPTY_TREE_SHA1_HEX
+if git cat-file -e HEAD 2>/dev/null
+then
+	head=HEAD
+else
+	head=$(git hash-object -t tree --stdin </dev/null)
+fi
+
+if ! git diff-index --quiet --cached --ignore-submodules $head --
+then
+	die "Working directory has staged changes"
+fi
+
+if ! git read-tree -u -m "$commit"
+then
+	die "Could not update working tree to new HEAD"
+fi
+
+
+---
+Path: .git/refs/heads/master
+---
+5611f45743e1c3aff89ffc0affa87c1679c92138
+
+
+---
+Path: .git/refs/remotes/origin/HEAD
+---
+ref: refs/remotes/origin/master
+
+
+
+---
+Path: js-extensions.md
+---
+
+js extensions are useful for things like
+* dynamic widgets
+* dynamic inputs
+* combos subfolders
+* color pickers
+* canvas apps (e.g. OpenPose manipulation)
+
+js extensions are installed in:
+
+ComfyUI_windows_portable\ComfyUI\web\extensions
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/4452a122-4a45-46ea-8708-f23ee3a9b14e)
+
+***
+### Dynamic Widgets
+
+Good examples can be found on tinyterraNodes.
+
+https://github.com/TinyTerra/ComfyUI_tinyterraNodes
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/0021a5aa-b92b-4a3c-b787-fa9d1a48ced4)
+
+In this example, the widgets displayed depend on the image_output option selected.
+
+***
+### Dynamic Inputs
+
+Example of a node with dynamic inputs in DrLtData's Impact Pack.
+
+https://github.com/ltdrdata/ComfyUI-Impact-Pack
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/bcd1c624-8df2-429b-bc81-eb655b37097b)
+
+In this example, the number of inputs depend on the number od images connected.
+
+***
+### Combo Subfolders
+
+Example of combo subfolders used on pythongosssss nodes.
+
+https://github.com/pythongosssss/ComfyUI-Custom-Scripts
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/af64322b-d294-407e-beaa-5c6c23d3bfbb)
+
+In this example, clicking on the widget will display subfolders in the \ComfyUI_windows_portable\ComfyUI\models\checkpoints folder.
+
+***
+### Color Picker
+
+Allows selection of colors from a button on the node.
+
+Example of a color picker used on mtb nodes.
+
+https://github.com/melMass/comfy_mtb
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/767c0c34-1bfb-445e-9de3-285448a2d258)
+
+In this example, clicking on the color button opens the following popup.
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/a91c5ae9-32cf-4187-a3c1-604e6fcdb680)
+
+***
+### Canvas Apps
+
+Example of a canvass app for OpenPose manipulation in AlekPet Nodes.
+
+https://github.com/AlekPet/ComfyUI_Custom_Nodes_AlekPet
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/218c9cae-3709-45b3-b7be-828f21718896)
+
+
+---
+Path: Output-Nodes.md
+---
+Examples of output nodes include:
+
+* Save Image
+* Preview Image
+* Checkpoint Save
+
+Example output node with no output connectors.
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/f649d40c-eafa-4ae0-9dd8-ae492ef201d7)
+
+These nodes do not have any output connectors, instead they will perform an action such as saving an ouput. Examples include:
+* saving an image
+* saving an animation
+* saving prompt data to a file
+* saving scheduling data to a file
+* saving a checkpoint
+
+To make an output node include the following lines in the node class.
+
+```
+    RETURN_TYPES = ()
+    OUTPUT_NODE = True
+```
+
+The return statement should look like this if there is no UI output.
+
+
+```
+    return {}
+```
+
+The return statement could look like this if there is image output to the UI.
+
+```
+    return {"ui": {"images": results}, "result": (image,)}
+```
+
+---
+Path: Adding-Emojis-🎨.md
+---
+The Noto Color Emojis can be used in node names, catergory names and also on your github README, github wiki, and CivitAI pages.
+
+https://fonts.google.com/noto/specimen/Noto+Color+Emoji/glyphs
+
+Example glyphs:
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/95f451ac-c43e-4090-950b-752c0efd3737)
+
+Examples of node packs using emojis include:
+* https://github.com/RockOfFire/ComfyUI_Comfyroll_CustomNodes
+* https://github.com/alt-key-project/comfyui-dream-project
+* https://github.com/Kosinkadink/ComfyUI-AnimateDiff-Evolved
+
+***
+## How to add emojis on your nodes
+
+There are several ways emojis can be configured in ComfyUI. The Comfyroll method is described below:
+
+### Steps
+
+1. Create a categories.py file.
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/728ba308-9b39-48c2-be19-b8789ff10b5f)
+
+```
+icons = {
+    "Comfyroll/Aspect Ratio": "🧩 Comfyroll/🔳 Aspect Ratio",
+    "Comfyroll/Upscale": "🧩 Comfyroll/🔍 Upscale",
+    "Comfyroll/Model Merge": "🧩 Comfyroll/⛏️ Model Merge",
+    "Comfyroll/Utils/Logic": "🧩 Comfyroll/🛠️ Utils/🔀 Logic"
+}
+```
+
+2. Add the following line to the imports section of each of your nodes files.
+
+```
+from ..categories import icons
+```
+
+3. Edit the CATEGORY on each of the nodes.
+
+Change from:
+
+```
+CATEGORY = "Comfyroll/Aspect Ratio"
+```
+
+Change to:
+
+```
+CATEGORY = icons.get("Comfyroll/Aspect Ratio")
+```
+
+4. Add the emoji in DISPLAY_NAME_MAPPINGS in the \_\_init\_\_ file.
+
+```
+NODE_DISPLAY_NAME_MAPPINGS = {
+    "CR Aspect Ratio": "🔳 CR Aspect Ratio",
+}
+```
+
+The node will now show the emoji:
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/f5ed81b8-68f3-4e3b-ae53-0c663a801564)
+
+The category menu will also show emojis for the node:
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/fa3e1a9c-55c6-4b8e-aede-ab8e8b860d53)
+
+***
+
+AnimDiff uses a slightly simpler method for creating categories. It doesn't use a categories.py file, but includes the emojis directly in the CATEGORY.
+
+```
+CATEGORY = "Animate Diff 🎭🅐🅓"
+```
+
+
+
+---
+Path: Tutorial-2-‐-Print-Hello-World.md
+---
+In this tutorial, we are going to build the Print Hello World node below
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/31d00bd0-1496-48e2-be2d-e1b7135b178d)
+
+The node outputs a message to the ComfyUI console log.
+
+## Steps
+
+### 1. Make a file called nodes.py in your nodes subfolder
+
+### 2. Open the file in Notepad++ or an IDE
+
+Windows Notepad is not recommended.
+
+### 3. Setup the class structure
+
+```
+class PrintHelloWorld:
+
+    @classmethod
+    def INPUT_TYPES(cls):
+
+    RETURN_TYPES = ()
+    FUNCTION = "print_text"
+    OUTPUT_NODE = True
+    CATEGORY = "Tutorial Nodes"
+
+    def print_text(self, text):
+       
+        return {}
+```
+
+* `RETURN_TYPES` defines the output types. In this there is an output to the console, but a output type is not required for this.
+* `FUNCTION` is used to specify the main function 
+* `OUTPUT_NODE` indicates this is the node that produces the ouput. A workflow must contain at least one output node to run. Usually this would be `Save Image` or `Preview Image`, but in this case there is no image output.
+* `CATEGORY` specifies where the node will be included in the ComfyUI node menu
+* The first parameter in the main function should always be `self`
+* The return statement is used to specify the objects that are passed to the node outputs. In this case there are none.
+
+### 5. Add the input parameters into the class structure
+
+* The input parameters must match the parameters in the `print_text` function
+
+```
+       return {"required": {
+                    "text": ("STRING", {"multiline": False, "default": "Hello World"}),
+                    }
+                }
+```
+
+### 6. Add the main function into the class structure
+
+* In this case the function consists of a formatted print statement.
+* Python is fussy about indents. Take care to use precise indentation.
+
+```
+        print(f"Tutorial Text : {text}")
+```
+
+### 7. Check the completed node
+
+It should look like this:
+
+```
+class PrintHelloWorld:     
+
+    @classmethod
+    def INPUT_TYPES(cls):
+               
+        return {"required": {       
+                    "text": ("STRING", {"multiline": False, "default": "Hello World"}),
+                    }
+                }
+
+    RETURN_TYPES = ()
+    FUNCTION = "print_text"
+    OUTPUT_NODE = True
+    CATEGORY = "Tutorial Nodes"
+
+    def print_text(self, text):
+
+        print(f"Tutorial Text : {text}")
+        
+        return {}
+```
+
+## Add the node to the `__init__.py` file
+
+### 1. Add a class mapping for the Hello World node in the `__init__.py` file
+
+```
+    "Hello World": HelloWorld,
+```
+### 2. Check the updated `__init__.py` file
+It should look like this:
+
+```
+from .nodes.nodes import *
+
+NODE_CLASS_MAPPINGS = {
+    "Print Hello World": PrintHelloWorld,
+    }
+    
+print("\033[34mComfyUI Tutorial Nodes: \033[92mLoaded\033[0m")
+```
+
+### 3. You can now start ComfyUI to test the node
+
+---
+Path: Data-Types.md
+---
+### Comfy Data Types
+
+| Data Type | Description |
+| --- | --- |
+| MODEL | Used for checkpoint models |
+| LORA | Used for LoRA models |
+| VAE | Used for VAE models |
+| CONDITIONING | Used for conditioning. This is an output from the CLIP Text Encoder and an input to the Ksampler. |
+| LATENT | Used for sampling. This is an output from the VAE Encoder and an input to the Ksampler.|
+| IMAGE | Data type for image inputs or outputs. Can be RGB or RGBA. |
+| STRING | Used for all text inputs and outputs|
+| COMBO | Used for widgets that provide a dropdown list of options.<br>e.g. lists of checkpoints, schedulers, colors, etc. |
+
+***
+### ANY datatype
+
+The ANY data type allows you to connect to any data type input.
+
+It is especially useful for connecting to the COMBO data type.
+
+Add the following at the top of your nodes file below the import statement.
+
+```
+class AnyType(str):
+    """Can be connected to any data types. Credit to pythongosssss"""
+
+    def __ne__(self, __value: object) -> bool:
+        return False
+
+ANY = AnyType("*")
+```
+
+In your node class you can then reference any_type as a data type in your RETURN_TYPES.
+
+```
+    RETURN_TYPES = (ANY, )
+```
+
+Examples of nodes using the ANY data type include:
+
+* Repeater 🐍
+* CR_StringToCombo
+* Int2Any_AS
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/c8527e59-cef2-4823-84a1-3921543b29cf)
+
+
+
+---
+Path: Tutorial-4-‐-Hello-World-Overlay-Text.md
+---
+In this tutorial, we are going to build the Hello World node below
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/83f91ae1-381d-4d86-aca5-d0790bbc03c1)
+
+The node overlays text onto a color background and outputs an image.
+
+## Steps
+
+### 1. Open the `nodes.py` file in Notepad++ or an IDE
+
+* Windows Notepad is not recommended.
+
+### 2. Choose the inputs and outputs that you want on the node
+
+```
+Inputs:
+image_width, image_height, text, font_size, font_color, background_color
+
+Outputs:
+image
+```
+
+### 3. Setup the class structure
+
+```
+class HelloWorldOverlayText:
+
+    @classmethod
+    def INPUT_TYPES(cls):
+
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("IMAGE",)
+    FUNCTION = "draw_overlay_text"
+    CATEGORY = "Tutorial Nodes"
+
+    def draw_overlay_text(self, image_width, image_height, text, 
+                   font_size, font_color, background_color):
+       
+        return (image_out)
+```
+
+* `RETURN_TYPES` defines the output types
+* `RETURN_NAMES` defines the output labels. In this case the output labels are the same as the output types.
+* `FUNCTION` is used to specify the main function 
+* `CATEGORY` specifies where the node will be included in the ComfyUI node menu
+* The first parameter in the main function should always be `self`
+* The return statement is used to specify the objects that are passed to the node outputs
+
+### 4. Add the import parameters into the class structure
+
+* The parameters must match the parameters in the `draw_overlay_text` function
+* Each `INT` parameter should include arguments defining the default value and the min and max values
+* The `STRING` parameter should include multiline = true or false. If true the text input will display as an input box. If false the text input will display as a widget.
+* The two color inputs are of type COMBO. The input is defined using an array `["white", "black", ...]`
+
+```
+       return {"required": {
+                    "image_width": ("INT", {"default": 512, "min": 64, "max": 2048}),
+                    "image_height": ("INT", {"default": 512, "min": 64, "max": 2048}),        
+                    "text": ("STRING", {"multiline": True, "default": "Hello World"}),
+                    "font_size": ("INT", {"default": 50, "min": 1, "max": 1024}),
+                    "font_color": (["white", "black", "red", "green", "blue", "yellow"],),
+                    "background_color": (["white", "black", "red", "green", "blue", "yellow"],),
+                    }
+                }
+```
+
+### 5. Make a draft for the main function using ChatGPT
+
+Try the following prompt
+
+```
+write a python function to draw centered text on a colored background using the PIL library
+use the following input parameters
+image_width, image_height, text, font_size, font_color, background_color
+```
+
+### 6. Edit the main function to clean-up any issues, or add missing code
+
+### 7. Add the main function into the class structure
+
+* Python is fussy about indents. Take care to use precise indentation.
+* The image is created using the PIL.Image function
+* The font is defined using the PIL.ImageFont function
+
+```
+        # Create a new PIL image
+        new_img = Image.new("RGBA", (image_width, image_height), background_color) 
+        draw = ImageDraw.Draw(new_img)
+
+        # Define font
+        font = ImageFont.truetype("arial.ttf", size=font_size) 
+        
+        # Get the image center
+        image_center_x = image_width/2
+        image_center_y = image_height/2
+        
+        # Draw the text, mm = text center
+        draw.text((image_center_x, image_center_y), text, fill=font_color, font=font, anchor="mm")
+        
+        # Convert the PIL image to a torch tensor
+        image_out = pil2tensor(new_img)
+
+```
+
+### 8. Add a function for converting from a PIL image to a tensor image
+
+```
+def pil2tensor(image):
+    return torch.from_numpy(np.array(image).astype(np.float32) / 255.0).unsqueeze(0) 
+```
+
+### 9. Add the import statement at the top of the file
+
+```
+import numpy as np
+import torch
+from PIL import Image, ImageDraw, ImageFont
+```
+
+* These will import libraries referenced in the functions
+* Numpy and Torch are needed for the `pil2tensor` function above
+* The three PIL functions are needed for the main function
+
+### 10. Check the completed node
+
+It should look like this:
+
+```
+import numpy as np
+import torch
+from PIL import Image, ImageDraw, ImageFont
+
+def pil2tensor(image):
+    return torch.from_numpy(np.array(image).astype(np.float32) / 255.0).unsqueeze(0) 
+ 
+# based on https://stackoverflow.com/questions/1970807/center-middle-align-text-with-pil
+
+class HelloWorldOverlayText:
+
+    @classmethod
+    def INPUT_TYPES(cls):
+               
+        return {"required": {
+                    "image_width": ("INT", {"default": 512, "min": 64, "max": 2048}),
+                    "image_height": ("INT", {"default": 512, "min": 64, "max": 2048}),        
+                    "text": ("STRING", {"multiline": True, "default": "Hello World"}),
+                    "font_size": ("INT", {"default": 50, "min": 1, "max": 1024}),
+                    "font_color": (["white", "black", "red", "green", "blue", "yellow"],),
+                    "background_color": (["white", "black", "red", "green", "blue", "yellow"],),
+                    }
+                }
+
+    RETURN_TYPES = ("IMAGE",)
+    #RETURN_NAMES = ("IMAGE",)
+    FUNCTION = "draw_overlay_text"
+    CATEGORY = "Tutorial Nodes"
+
+    def draw_overlay_text(self, image_width, image_height, text, 
+                   font_size, font_color, background_color):
+
+        # Create a new PIL image
+        new_img = Image.new("RGBA", (image_width, image_height), background_color) 
+        draw = ImageDraw.Draw(new_img)
+
+        # Define font
+        font = ImageFont.truetype("arial.ttf", size=font_size) 
+        
+        # Get the image center
+        image_center_x = image_width/2
+        image_center_y = image_height/2
+        
+        # Draw the text, mm = text center
+        draw.text((image_center_x, image_center_y), text, fill=font_color, font=font, anchor="mm")
+        
+        # Convert the PIL image to a torch tensor
+        image_out = pil2tensor(new_img)
+        
+        return (image_out,)
+```
+
+## Add the node to the `__init__.py` file
+
+### 1. Add a class mapping for the `Hello World` node in the `__init__.py` file
+
+```
+    "Hello World": HelloWorld,
+```
+
+### 2. Check the updated `__init__.py` file
+
+It should look like this:
+
+```
+from .nodes.nodes import *
+
+NODE_CLASS_MAPPINGS = {
+    "Print Hello World": PrintHelloWorld,
+    "Concatenate Hello World": ConcatenateHelloWorld,
+    "Hello World Overlay Text": HelloWorldOverlayText,
+    }
+    
+print("\033[34mComfyUI Tutorial Nodes: \033[92mLoaded\033[0m")    
+```
+
+### 3. You can now start ComfyUI to test the node
+
+---
+Path: Node-Overview.md
+---
+At a high level nodes are structured into two main sections:
+* the class name followed by 
+> * a definiton for the input types
+> * core variables for the RETURN_TYPE, RETURN_NAME, FUNCTION and CATEGORY
+* definitions for the main function and any sub-functions local to the class
+
+# Node Class - First Section
+
+This section configures:
+* the class name
+* the inputs and outups
+* the name of the main function
+* the location the node will appear in the node menu
+
+Example:
+```
+class CR_ApplyControlNet:
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {"conditioning": ("CONDITIONING", ),
+                             "control_net": ("CONTROL_NET", ),
+                             "image": ("IMAGE", ),
+                             "switch": (["On","Off"],),
+                             "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.01})
+                             }
+               }
+               
+    RETURN_TYPES = ("CONDITIONING", "STRING", )
+    RETURN_NAMES = ("CONDITIONING", "show_help", )
+    FUNCTION = "apply_controlnet"
+    CATEGORY = "Comfyroll/ControlNet"
+```
+
+Some nodes are more complex than this, but this structure is common to most nodes.
+
+***
+### **class name**
+
+Class names usually use the Upper Camel Case or Pascal Case naming convention.
+
+https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/capitalization-conventions
+
+Example class names:
+* CR_LatentInputSwitch
+* LoadImageFromUrl_
+* UnsamplerHookProvider
+* WAS_Mask_Dilate_Region
+* RgthreeLoraLoaderStack
+
+***
+### INPUT_TYPES defintion
+
+The INPUT_TYPES definition must be preceeded by `@classmethod`.
+
+There are three types of inputs type:
+* required
+* optional
+* hidden
+
+Required inputs must contain a valid value for the workflow to complete successully.
+
+Optional inputs do not require any input. They can be left blank without interrupting the workflow execution.
+
+Hidden data types do not show as inputs on the nodes. Examples include inputs for the Prompt.
+
+***
+
+### RETURN TYPES core variable
+
+Example:
+```
+    RETURN_TYPES = ("LATENT",)
+```
+
+RETURN_TYPES must match the return statement in the main function.
+
+***
+### RETURN_NAMES core variable
+
+Example:
+```
+    RETURN_NAMES = ("latent",)
+```
+
+RETURN_NAMES are required if the labels on the outputs are different to the output data types.
+If the labels are the same then this variable is not required.
+
+***
+### CATEGORY core variable
+
+Example:
+```
+    CATEGORY = "Comfyroll/ControlNet"
+```
+
+# Function Definitions
+
+The second part of the node class comprises the main function plus any sub-functions local to the class.
+
+This second is WIP.
+
+### return statement
+
+Example:
+```
+    return (latent_out, )
+```
+
+* the main function may use multiple returns but only one will execute
+* in most cases this should be a tuple in the format
+
+
+
+
+---
+Path: ComfyUI-Manager.md
+---
+https://github.com/ltdrdata/ComfyUI-Manager
+
+ComfyUI-Manager is an extension designed to enhance the usability of ComfyUI. It offers management functions to install, remove, disable, and enable various custom nodes of ComfyUI. Furthermore, this extension provides a hub feature and convenience functions to access a wide range of information within ComfyUI.
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/06342772-5b4f-416c-8bf6-5f1ae912de7d)
+
+ComfyUI Manager automatocally finds custom node projects on github and adds these to the list of custom node packs available for install via the Manager.
+
+
+---
+Path: Making-a-GitHub-Repository.md
+---
+[see below](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Making-a-GitHub-Project/_edit#readmemd-file)
+
+Once you have completed testing your nodes then you can make them public via a GitHub repository (repo).
+
+First you need to chose a name for your repo. This will be the same as the folder name containing your custom nodes and will also be the name displayed in ComfyUi Manager.
+
+Names shouldn't include spaces but you can use underscores or hyphens. Example name include:
+
+* ComfyUI-MyNodePack
+* ComfyUI_My_Node_Pack
+* mynodepack-comfyui
+* MyNodePack
+
+Including 'ComfyUI' in the repo name may increase the chances of people finding you nodes.
+
+When you create the repo you first need to set the repo to private while you are assembling the content for the pack.
+You will also be given the option of creating a README file ([see below](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Making-a-GitHub-Project/_edit#readmemd-file)).
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/fa58d845-e566-4017-b314-e8de40c6e51d)
+
+Add a title and an introduction for your repo. You edit the file later, or replace it entirely using your own README file.
+
+You can also select an open source license from the list of options available.
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/a8ad40de-1ab2-44fa-9134-53c3ffc74a7e)
+
+Your repo, should now look like this:
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/82301d21-dd31-4bfc-a6bb-7875667463aa)
+
+You can now drag in your `__init__.py` file, and the folder containing your custom nodes, into the file list panel or use the 'Add file' button.
+
+You will need to commit each of the new files. It is good practice to write a description of the change each time you do a commit.
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/aac87c6b-f971-485d-87e8-f83ac3365d9a)
+
+Your repo should now look like this:
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/c97f6de4-f3f4-4863-94c8-0cb3a251bdf3)
+
+Once the files have all been added you should be ready to test the node pack. First disable your node pack in custom nodes by adding .disabled after the folder name.
+
+Then download the zip file from github, copy it to the custom_nodes folder and unzip it.
+
+Next, start ComfyUI to check that the nodes load okay, then run your test workflow to confirm is works as expected.
+
+If all is good then you will be ready to make your repo public. Before doing this, check that the README file contains sufficent information to describe the nodes.
+
+You should now be ready to make your nodes public. This is done under the Danger Zone in Settings.
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/e5ebcbbd-137f-4209-9d59-a1ab25eebb74)
+
+Once you move the repo to public you can add Wiki pages (see below).
+
+ComfyUI Manager will find your repo the next time it scans for new repos. You can check in the Manager the next day to see if it there. If it doesn't appear after a few days then check if there are any issues on ComfyUI Manager that may explain why it is not be loading. If there are no issues then you could raise an issue explaining that your project is not visible in the Manager after waiting several days.
+
+The description in ComfyUI Manager will correspond to the description in About in the top right corner of your repo main page.
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/e3c37030-a7d1-4352-9fef-7e1f9703280d)
+
+***
+### README.md File
+
+The README is simply a text file with a .md extension written in markdown format. You can make one in NotePad++ or edit the page automatically generated by your repo.
+
+The README can be used for:
+* introducing your nodes
+* providing installation instruction
+* providing an overview of their functions
+* troubleshooting information
+* crediting sources used in making the nodes.
+
+Use this guide to learn more about formatting README files
+https://docs.github.com/en/get-started/writing-on-github
+
+**Good example of a README file:**
+
+https://github.com/ltdrdata/ComfyUI-Impact-Pack
+
+***
+### Wiki Pages
+
+Good wiki pages can help users learn how to use your nodes.
+
+It can also help reduce the number of issues raised by users due to using the nodes in incorrect ways.
+
+Wikis can only be created on Public repos.
+
+Wiki pages can include:
+* descriptions of the input and output parameters
+* images or animated GIFs showing how the nodes work
+* links to demo workflows or YouTube videos
+
+https://docs.github.com/en/communities/documenting-your-project-with-wikis/about-wikis
+
+**Good examples of a node pack wiki:**
+
+https://github.com/melMass/comfy_mtb/wiki
+
+
+
+---
+Path: Tutorial-1-‐-Init-File.md
+---
+
+## Create the `__init__.py` file
+
+### 1. Make a file called `__init__.py` in your nodes subfolder
+
+### 2. Add an empty NODE_CLASS_MAPPINGS dictionary
+```
+NODE_CLASS_MAPPINGS = {
+    # Add mappings here
+    }
+```
+
+### 3. Create an import statement in your `__init__.py` file to import all nodes in your `nodes.py` file
+
+```
+from .nodes.tutorial_nodes import *
+```
+
+### 4. Add a print statement to print a log message in the ComfyUI log console
+
+```
+print("\033[34mComfyUI Tutorial Nodes: \033[92mLoaded\033[0m")
+```
+
+### 5. Check the completed `__init__.py` file
+
+It should look like this:
+
+```
+from .nodes.tutorial_nodes import *
+
+NODE_CLASS_MAPPINGS = {
+    # Add mappings here
+    }
+    
+print("\033[34mComfyUI Tutorial Nodes: \033[92mLoaded\033[0m")    
+```
+
+---
+Path: init-file.md
+---
+The `__init__.py` file is used to launch the custom nodes. It controls which nodes will be imported.
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/6d67db43-96d9-4b8c-85fe-049ae62afff3)
+
+The file has the following structue:
+
+***
+
+### import statements
+
+The import section is used to import classes from the node files.
+
+```
+from .nodes.lora import *
+from .nodes.controlnet import *
+```
+
+This example imports the node classes from two files in the nodes subfolder.
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/d48b013e-a7f5-48d5-8bd7-8e372011ee73)
+
+***
+### NODE_CLASS_MAPPINGS
+
+The node class mappings section maps node names to node classes.
+
+e.g. name `CR Latent Batch Size` to class `CR_LatentBatchSize`
+
+```
+LIVE_NODE_CLASS_MAPPINGS = {
+    "CR Image Output": CR_ImageOutput,
+    "CR Integer Multiple": CR_IntegerMultipleOf,
+    "CR Latent Batch Size": CR_LatentBatchSize,   
+    "CR Seed": CR_Seed
+}
+```
+
+The node name is the name that will appear in the ComfyUI node search.
+If no node display name mappings are used, then it will also be the name used on the node.
+
+***
+### NODE_DISPLAY_NAME_MAPPINGS (optional)
+
+The node display name mappings section maps node names to display names.
+
+e.g. name `CR Latent Batch Size` to class `⚙️ CR Latent Batch Size`
+
+```
+NODE_DISPLAY_NAME_MAPPINGS = {
+    "CR Image Output": "💾 CR Image Output",
+    "CR Integer Multiple": "⚙️ CR Integer Multiple",
+    "CR Latent Batch Size": "⚙️ CR Latent Batch Size",
+    "CR Seed": "🌱 CR Seed"
+}
+
+```
+
+The node display name can include emojis.
+
+***
+### print statements (optional)
+
+Print statements can be included to display a loading message in the ComfyUI log screen.
+
+`print("\033[34mComfyroll Custom Nodes: \033[92mLoaded\033[0m")`
+
+The print statement can display color text.
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/5185d5d0-4ca7-44a5-abce-2d876fe2f877)
+
+Take care not to spam messages. Excessive messages may be annoying to users.
+
+***
+### other code (optional)
+
+Other code may be included in the \_\_init\_\_ file.
+
+For example code to install libraries or to launch js apps could be included. 
+
+
+---
+Path: Custom-Node-Resources.md
+---
+## [ComfyUI Manager](https://github.com/ltdrdata/ComfyUI-Manager)
+
+ComfyUI-Manager is an extension designed to enhance the usability of ComfyUI. It offers management functions to install, remove, disable, and enable various custom nodes of ComfyUI. Furthermore, this extension provides a hub feature and convenience functions to access a wide range of information within ComfyUI.
+
+###
+
+## Guides
+
+[Comfy Custom Node How-To](https://github.com/chrisgoringe/Comfy-Custom-Node-How-To)
+
+An unofficial, practical, collaborative Q&A to getting started developing custom nodes for ComfyUI.
+
+###
+
+## YouTube Videos
+
+[Cody Sehl - How to make your own custom ComfyUI nodes](https://www.youtube.com/watch?v=tr_0qnwLQ0I)
+
+[Code Crafters Corner - Create Your Own Custom Nodes in ComfyUI](https://www.youtube.com/watch?v=RSp9_fh3JoI)
+
+---
+Path: FAQ.md
+---
+Q. What skills do I need to make custom nodes?
+
+A. Beginners level python should be enough to get you started. A knowledge of js would also be very useful for making js extensions for your node pack.
+
+***
+
+Q. What tools do I need to make custom nodes?
+
+A. The following would be useful:
+* Notepad++
+* GitHub Desktop
+* Visual Studio Code (VS Code)
+
+***
+
+Q. Can a node pack contain 1 node?
+
+A. Yes, it can contain any number of nodes.
+
+***
+
+Q. How many python files do I need for my node pack?
+
+A. Normally you will need at least two files, one for the init and one for the nodes. It is possible to combine the init and nodes in a single file but this may be difficult to manage if your node pack grows. You can create as many files and folders as you need, and use your init file to manage them.
+
+***
+
+Q. Should I put my custom nodes in a folder?
+
+A. The folder will be automatically created from your github project. The folder name will be the same as your github project name. ComfyUI Manager will automatically import from your main branch.
+
+***
+
+Q. Do I need a github project?
+
+A. It is recommended to create a project because it will facilitate installations via ComfyUI Manager. It is also useful for collaborative work and pull requests. It is possible to distribute nodes on sites like CivitAI but it is harder for users to keep their node packs updated.
+
+***
+
+Q. How do I add my nodes on ComfyUI Manager?
+
+A. If the custom nodes are in a public github project and properly setup then they should be automatically picked up by ComfyUI Manager.
+
+***
+
+Q. Do I need js event handlers and apps?
+
+A. For most nodes they are not needed. js extensions can be useful for things like:
+* dynamic widgets
+* dynamic inputs or outputs
+* color pickers
+* drawing and canvas apps (e.g. real time painting or open pose manipulation)
+
+
+
+
+
+---
+Path: Home.md
+---
+
+# 🧩 Guide To Making Custom Nodes in ComfyUI
+
+This guide is intended for people getting started with making custom nodes in [ComfyUI](https://github.com/comfyanonymous/ComfyUI).
+
+**Contents**
+
+* [FAQ](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/FAQ)
+* [Custom Node Resources](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Custom-Node-Resources)
+* [Node Overview](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Node-Overview)
+* [init File](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/init-file)
+* [Folder Structure](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Folder-Structure)
+* [Tutorials](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Tutorials)
+* [Development Tips](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Development-Tips)
+* [js extensions](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/js-extensions)
+* [Adding Emojis 🎨](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Adding-Emojis-%F0%9F%8E%A8)
+* [Making a GitHub Repository](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Making-a-GitHub-Repository)
+* [Sharing Your Nodes](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Sharing-Your-Nodes)
+* [ComfyUI Manager](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/ComfyUI-Manager)
+* [Data Types](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Data-Types)
+
+**Other Useful Stuff**
+
+* [ComfyUI Workflow Resources](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/ComfyUI-Workflow-Resources)
+
+__Example custom node for switching between two latent inputs__
+
+![CR Latent Input Switch](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/936d98ab-6e06-46ac-8df1-b3e4d77afc91)
+
+![example](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/afdcd0b9-ab52-4fe0-9df0-a1aef702327d)
+
+This was the first node created for the Comfyroll Custom Nodes node pack.
+
+---
+Path: Tutorials.md
+---
+These tutorials are designed to help get you started with making your own custom nodes.
+
+[Tutorial 1 ‐ Init File](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Tutorial-1-%E2%80%90-Init-File)
+
+[Tutorial 2 ‐ Print Hello World](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Tutorial-2-%E2%80%90-Print-Hello-World)
+
+[Tutorial 3 ‐ Concatenate Hello World](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Tutorial-3-%E2%80%90-Concatenate-Hello-World)
+
+[Tutorial 4 ‐ Hello World Overlay Text](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Tutorial-4-%E2%80%90-Hello-World-Overlay-Text)
+
+It is recommended to do the tutorials in sequence.
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/ff375203-bbb4-420c-b8af-40568ecae02f)
+
+
+
+---
+Path: Tutorial-3-‐-Concatenate-Hello-World.md
+---
+In this tutorial, we are going to build the Concatenate Hello World node below
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/7ccd39f4-042f-473d-a947-3f92b94fcb11)
+
+The node concatenates two text strings and outputs these as a combined string.
+
+### 1. Open the `nodes.py` file in Notepad++ or an IDE
+
+* Windows Notepad is not recommended.
+
+### 2. Setup the class structure
+
+```
+class ConcatenateHelloWorld:
+
+    @classmethod
+    def INPUT_TYPES(cls):
+
+    RETURN_TYPES = ("STRING",)
+    FUNCTION = "concatenate_text"
+    CATEGORY = "Tutorial Nodes"
+
+    def concatenate_text(self, text1, text2):
+       
+        return {}
+
+```
+
+* RETURN_TYPES defines the output types
+* FUNCTION is used to specify the main function
+* CATEGORY specifies where the node will be included in the ComfyUI node menu
+* The first parameter in the main function should always be self
+* The return statement is used to specify the objects that are passed to the node outputs
+
+### 5. Add the input parameters into the class structure
+
+* The input parameters must match the parameters in the `concatenate_text` function
+
+```
+       return {"required": {
+                    "text1": ("STRING", {"multiline": False, "default": "Hello"}),
+                    "text2": ("STRING", {"multiline": False, "default": "World"}),
+                    }
+                }
+```
+
+### 8. Add the main function into the class structure
+
+* In this case the function consists of a text formula.
+* Python is fussy about indents. Take care to use precise indentation.
+
+
+```
+        text_out = text1 + " " + text2
+```
+### 11. Check the completed node
+
+It should look like this:
+
+```
+class ConcatenateHelloWorld:     
+
+    @classmethod
+    def INPUT_TYPES(cls):
+               
+        return {"required": {       
+                    "text1": ("STRING", {"multiline": False, "default": "Hello"}),
+                    "text2": ("STRING", {"multiline": False, "default": "World"}),
+                    }
+                }
+
+    RETURN_TYPES = ("STRING",)
+    FUNCTION = "concatenate_text"
+    CATEGORY = "Tutorial Nodes"
+
+    def concatenate_text(self, text1, text2):
+
+        text_out = text1 + " " + text2
+        
+        return (text_out,)
+```
+
+
+## Add the node to the `__init__.py` file
+
+### 1. Add a class mapping for the Hello World node in the `__init__.py` file
+
+```
+    "Concatenate Hello World": ConcatenateHelloWorld,
+```
+### 2. Check the updated `__init__.py` file
+It should look like this:
+
+```
+from .nodes.nodes import *
+
+NODE_CLASS_MAPPINGS = {
+    "Print Hello World": PrintHelloWorld,
+    "Concatenate Hello World": ConcatenateHelloWorld,
+    }
+    
+print("\033[34mComfyUI Tutorial Nodes: \033[92mLoaded\033[0m")
+```
+
+### 3. You can now start ComfyUI to test the node
+
+---
+Path: ComfyUI-Workflow-Resources.md
+---
+Official ComfyUI resources:
+
+* [comfyanonymous ComfyUI examples](https://github.com/comfyanonymous/ComfyUI_examples)
+
+Community resources:
+
+* [ComfyUI Community Docs](https://blenderneko.github.io/ComfyUI-docs/)
+
+Popular sites:
+
+* [comfy workflows](https://comfyworkflows.com)
+* [openart.ai workflows](https://openart.ai/workflows/dev?sort=latest)
+* [rundiffusion comfyui workflows](https://rundiffusion.com/comfyui-workflows)
+
+CivitAI workflow creators:
+
+* [Searge](https://civitai.com/user/searge)
+* [Akatsuzi](https://civitai.com/user/Akatsuzi)
+* [Grockster](https://civitai.com/user/Grockster)
+* [Winston_Woof](https://civitai.com/user/Winston_Woof)
+
+YouTube channels:
+* [Olivio Sarikas](https://www.youtube.com/@OlivioSarikas)
+* [Scott Detweiler](https://www.youtube.com/@sedetweiler)
+* [Grockster](https://www.youtube.com/@GrocksterRox)
+* [A Latent Place](https://www.youtube.com/@ALatentPlace)   German language
+* [Ferniclestix](https://www.youtube.com/@ferniclestix)
+
+Social media:
+* [Reddit r/comfyui](https://www.reddit.com/r/comfyui/)
+
+***
+
+## [comfy workflows](https://comfyworkflows.com)
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/0867636f-00fb-43ab-9ef6-8f5370bda5cb)
+
+## [openart.ai workflows](https://openart.ai/workflows/dev?sort=latest)
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/5fb182b1-3a26-47c5-9514-d4e13adba257)
+
+## [rundiffusion comfyui workflows](https://rundiffusion.com/comfyui-workflows)
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/62d784f3-f21c-458d-a425-e28305bc56c4)
+
+
+
+
+---
+Path: Stacker-Nodes.md
+---
+Stacker Nodes are a type of node that make it very easy to chain inputs together and then apply them in one operation.
+
+* Stacker nodes store lists of data but do not process data other than doing data validation.
+* The nodes usually look like tables or lists and have the same input and outputs allowing them to be chained together to combine the dataset into a single output.
+* They are generally paired with an 'Apply' node that processes the items in the table or list.
+
+**Example Stacker Node**
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/50b7c4bb-0b8b-48cc-8f2c-c37fd528da0d)
+
+In this example the stacker node is used to configure the models that will be merged in the CR Apply Model Merge node.
+* The stacker node is also used to configure the model and clip ratios for each model.
+* On/Off switches are included to allow easy configuration.
+
+### Advantages of Stacker Nodes
+* They are very extensible. If you need more items in your stack then just chain another stacker node of the same type. For example you can chain three CR LoRA Stack nodes to hold a list of 9 LoRAs.
+* Some stacker nodes may include a switch attribute that allows you to turn each item On/Off. This is very useful for retaining configurations in your workflow, and for rapidly switching configurations.
+* Stacker nodes work well with schedulers.
+* Stackers can also store local attributes that apply to all item in the stacker node.
+* They are compact and help reduce complexity in workflows. For example the CR Multi-Control Stack can be used used to replace six separate nodes.
+
+* Stack nodes do not need to be located lose to the point where they are applied in a workflow. They can be located in a control panel and connected to the apply node via a single connector. This facilitates modularization of workflows.
+
+### Examples of Node Packs that include Stacker Nodes
+
+* [Comfyroll Custom Nodes](https://civitai.com/models/87609/comfyroll-custom-nodes-for-comfyui)
+* [Efficiency Nodes](https://civitai.com/models/32342/efficiency-nodes-for-comfyui)
+* [rgthree](https://github.com/rgthree/rgthree-comfy)
+
+More information on stacker nodes can be found in this CivitAI article:
+
+https://civitai.com/articles/1997/comfyui-guide-to-stacker-nodes
+
+---
+Path: _Sidebar.md
+---
+[Home](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki)
+* [FAQ](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/FAQ)
+* [Custom Node Resources](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Custom-Node-Resources)
+* [Node Overview](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Node-Overview)
+> * [Output Nodes](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Output-Nodes)
+> * [Stacker Nodes](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Stacker-Nodes)
+* [init File](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/init-file)
+* [Folder Structure](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Folder-Structure)
+* [Tutorials](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Tutorials)
+> * [Tutorial 1 ‐ Init File](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Tutorial-1-%E2%80%90-Init-File)
+> * [Tutorial 2 ‐ Print Hello Word](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Tutorial-2-%E2%80%90-Print-Hello-World)
+> * [Tutorial 3 ‐ Concatenate Hello World](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Tutorial-3-%E2%80%90-Concatenate-Hello-World)
+> * [Tutorial 4 ‐ Hello World Overlay Text](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Tutorial-4-%E2%80%90-Hello-World-Overlay-Text)
+* [Development Tips](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Development-Tips)
+* [js extensions](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/js-extensions)
+* [Adding Emojis 🎨](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Adding-Emojis-%F0%9F%8E%A8)
+* [Making a GitHub Repository](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Making-a-GitHub-Repository)
+* [Sharing Your Nodes](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Sharing-Your-Nodes)
+* [ComfyUI Manager](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/ComfyUI-Manager)
+* [Data Types](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/Data-Types)
+
+Other Useful stuff
+* [ComfyUI Workflow Resources](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/wiki/ComfyUI-Workflow-Resources)
+
+
+
+
+---
+Path: Development-Tips.md
+---
+Here a few tips to help accelerate your node development
+
+***
+
+## ChatGPT
+
+GPT is amazing tool for helping write functions.
+
+Here is an example prompt used in Tutorial #4:
+
+```
+write a python function to draw centered text on a colored background using the PIL library
+use the following input parameters
+image_width, image_height, text, font_size, font_color, background_color
+```
+
+Here is the GPT3.5 output:
+
+```
+from PIL import Image, ImageDraw, ImageFont
+
+def draw_centered_text(image_width, image_height, text, font_size, font_color, background_color):
+    # Create a new image with the specified dimensions and background color
+    image = Image.new("RGB", (image_width, image_height), background_color)
+    draw = ImageDraw.Draw(image)
+
+    # Load a font (you can adjust the font path as needed)
+    font = ImageFont.load_default()
+
+    # Calculate the position to center the text
+    text_width, text_height = draw.textsize(text, font)
+    x = (image_width - text_width) // 2
+    y = (image_height - text_height) // 2
+
+    # Draw the text on the image
+    draw.text((x, y), text, font=font, fill=font_color)
+
+    # Save or display the image
+    image.save("centered_text_image.png")
+    image.show()
+```
+***
+## Prototyping
+
+* A prototype node is a node that contains the class structure and INPUT_TYPES, and just enough code to produce a valid ouput
+* It doesn't include library imports, the main function logic or any sub-functions
+
+For example a prototype for the node in Tutorial #4 would look like this:
+
+```
+class HelloWorldProtoType:
+
+    @classmethod
+    def INPUT_TYPES(cls):
+               
+        return {"required": {
+                    "image_width": ("INT", {"default": 512, "min": 64, "max": 2048}),
+                    "image_height": ("INT", {"default": 512, "min": 64, "max": 2048}),        
+                    "text": ("STRING", {"multiline": True, "default": "Hello World"}),
+                    "font_size": ("INT", {"default": 50, "min": 1, "max": 1024}),
+                    "font_color": (["white", "black", "red", "green", "blue", "yellow"],),
+                    "background_color": (["white", "black", "red", "green", "blue", "yellow"],),
+                    }
+                }
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "draw_overlay_text"
+    CATEGORY = "Tutorial Nodes"
+
+    def draw_overlay_text(self, image_width, image_height, text, 
+                   font_size, font_color, background_color):
+
+        return (image_out)
+```
+
+* The protype node will display in UI and can be connected to other nodes, but will not be fully functional
+* It can be used for making mockups of nodes for discussion with collaborators before committing to a final design
+* In this example it will be possible to connect the prototype node to a `Preview Image` node, but an error will be produced in the workflow is run
+
+```
+name 'image_out' is not defined
+```
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/e253f9d4-ce97-4f64-90e5-a25bd4b54fbe)
+
+
+---
+Path: Sharing-Your-Nodes.md
+---
+You can share you nodes in the following ways:
+* Make a post for you nodes on CivitAI
+* Make a post on [r/ComfyUI](https://www.reddit.com/r/comfyui/) on Reddit or on other AI related reddits
+* Make a post on X (Twitter) announcing your new node pack, and make posts each time you update it with new features
+* Make a demo workflow using your custom nodes and post it on:
+> * [CivitAI](https://civitai.com/)
+> * [OpenArt](https://openart.ai/workflows/dev)
+> * [Comfy Workflows](https://comfyworkflows.com/)
+
+***
+### CivitAI
+* Include screen snips of your nodes in the post or in the gallery on the post
+* Upload a zip file containing the nodes. This is the zip file from github. Before uploading you will need to rename the folder to remove -main from the folder name
+
+Steps
+
+**1. In GitHub, Download the Zip file under Code.**
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/6d722530-df23-47b4-83de-07490f6abe30)
+
+**2. In your zip application remove -main from the folder name in the zip file**
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/d02eb04b-e76a-4774-8fbc-48c57f75dcd2)
+
+**3. Make a new post on CivitAI**
+
+* Use the 'Workflow' and 'Tool' categories
+* Add tags for 'ComfyUI' and 'Nodes'
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/e08c5fe8-f8d2-4794-9b7b-55b926ee5d6b)
+
+**4. Upload your Zip file under Manage Files**
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/16d3f2e0-6871-42e4-afad-aa44c78b1b9b)
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/9b43d6cd-dee5-4372-9b51-fb123728f8bc)
+
+
+
+
+---
+Path: Folder-Structure.md
+---
+A project can contain multiple folders for organising your code and other content.
+
+Here is an example folder structure:
+
+![image](https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes/assets/42118269/c60e5869-4433-4016-9de6-30cd891956eb)
+
+***
+### nodes folder
+
+This folder may contain multiple node files. In a small node pack a dingle file will normally be fine, but in larger node packs you may want to organise nodes into different files by type or function.
+
+This folder can also contain files for functions that are shared by multiple nodes.
+
+A nodes folder is optional, but is recommended if you plan to have multiple node files.
+
+***
+### workflows folder
+
+Demo comfyui workflows may be included here.
+
+***
+### web or js folder
+
+js apps may be included here.
+
+***
+### images folders
+
+An `images` folder could contain images with embedded workflows or reference images showing all the nodes in the node pack.
+
+***
+### fonts folders
+
+A `fonts` folder could be useful if you have nodes that generate images with overlay text. E.g. annotations on XY grids.
+
+***
+### styles folder
+
+A  `styles` folder could be useful if you have nodes used to generate prompt styles. The folder could be used for the json files containing the style definitions.
+
+
+
+
+---
+Path: .git/config
+---
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+	ignorecase = true
+	precomposeunicode = true
+[remote "origin"]
+	url = https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes.wiki.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+
+
+---
+Path: .git/HEAD
+---
+ref: refs/heads/master
+
+
+---
+Path: .git/description
+---
+Unnamed repository; edit this file 'description' to name the repository.
+
+
+---
+Path: .git/packed-refs
+---
+# pack-refs with: peeled fully-peeled sorted 
+25ade189fa61c0f7fa35745bd3943a9fc1ba426f refs/remotes/origin/master
+
+
+---
+Path: .git/info/exclude
+---
+# git ls-files --others --exclude-from=.git/info/exclude
+# Lines that start with '#' are comments.
+# For a project mostly in C, the following would be a good set of
+# exclude patterns (uncomment them if you want to use them):
+# *.[oa]
+# *~
+
+
+---
+Path: .git/logs/HEAD
+---
+0000000000000000000000000000000000000000 25ade189fa61c0f7fa35745bd3943a9fc1ba426f cian0 <cyril.icasiano@gmail.com> 1704208674 +0800	clone: from https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes.wiki.git
+
+
+---
+Path: .git/logs/refs/heads/master
+---
+0000000000000000000000000000000000000000 25ade189fa61c0f7fa35745bd3943a9fc1ba426f cian0 <cyril.icasiano@gmail.com> 1704208674 +0800	clone: from https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes.wiki.git
+
+
+---
+Path: .git/logs/refs/remotes/origin/HEAD
+---
+0000000000000000000000000000000000000000 25ade189fa61c0f7fa35745bd3943a9fc1ba426f cian0 <cyril.icasiano@gmail.com> 1704208674 +0800	clone: from https://github.com/Suzie1/ComfyUI_Guide_To_Making_Custom_Nodes.wiki.git
+
+
+---
+Path: .git/hooks/commit-msg.sample
+---
+#!/bin/sh
+#
+# An example hook script to check the commit log message.
+# Called by "git commit" with one argument, the name of the file
+# that has the commit message.  The hook should exit with non-zero
+# status after issuing an appropriate message if it wants to stop the
+# commit.  The hook is allowed to edit the commit message file.
+#
+# To enable this hook, rename this file to "commit-msg".
+
+# Uncomment the below to add a Signed-off-by line to the message.
+# Doing this in a hook is a bad idea in general, but the prepare-commit-msg
+# hook is more suited to it.
+#
+# SOB=$(git var GIT_AUTHOR_IDENT | sed -n 's/^\(.*>\).*$/Signed-off-by: \1/p')
+# grep -qs "^$SOB" "$1" || echo "$SOB" >> "$1"
+
+# This example catches duplicate Signed-off-by lines.
+
+test "" = "$(grep '^Signed-off-by: ' "$1" |
+	 sort | uniq -c | sed -e '/^[ 	]*1[ 	]/d')" || {
+	echo >&2 Duplicate Signed-off-by lines.
+	exit 1
+}
+
+
+---
+Path: .git/hooks/pre-rebase.sample
+---
+#!/bin/sh
+#
+# Copyright (c) 2006, 2008 Junio C Hamano
+#
+# The "pre-rebase" hook is run just before "git rebase" starts doing
+# its job, and can prevent the command from running by exiting with
+# non-zero status.
+#
+# The hook is called with the following parameters:
+#
+# $1 -- the upstream the series was forked from.
+# $2 -- the branch being rebased (or empty when rebasing the current branch).
+#
+# This sample shows how to prevent topic branches that are already
+# merged to 'next' branch from getting rebased, because allowing it
+# would result in rebasing already published history.
+
+publish=next
+basebranch="$1"
+if test "$#" = 2
+then
+	topic="refs/heads/$2"
+else
+	topic=`git symbolic-ref HEAD` ||
+	exit 0 ;# we do not interrupt rebasing detached HEAD
+fi
+
+case "$topic" in
+refs/heads/??/*)
+	;;
+*)
+	exit 0 ;# we do not interrupt others.
+	;;
+esac
+
+# Now we are dealing with a topic branch being rebased
+# on top of master.  Is it OK to rebase it?
+
+# Does the topic really exist?
+git show-ref -q "$topic" || {
+	echo >&2 "No such branch $topic"
+	exit 1
+}
+
+# Is topic fully merged to master?
+not_in_master=`git rev-list --pretty=oneline ^master "$topic"`
+if test -z "$not_in_master"
+then
+	echo >&2 "$topic is fully merged to master; better remove it."
+	exit 1 ;# we could allow it, but there is no point.
+fi
+
+# Is topic ever merged to next?  If so you should not be rebasing it.
+only_next_1=`git rev-list ^master "^$topic" ${publish} | sort`
+only_next_2=`git rev-list ^master           ${publish} | sort`
+if test "$only_next_1" = "$only_next_2"
+then
+	not_in_topic=`git rev-list "^$topic" master`
+	if test -z "$not_in_topic"
+	then
+		echo >&2 "$topic is already up to date with master"
+		exit 1 ;# we could allow it, but there is no point.
+	else
+		exit 0
+	fi
+else
+	not_in_next=`git rev-list --pretty=oneline ^${publish} "$topic"`
+	/opt/local/bin/perl5.34 -e '
+		my $topic = $ARGV[0];
+		my $msg = "* $topic has commits already merged to public branch:\n";
+		my (%not_in_next) = map {
+			/^([0-9a-f]+) /;
+			($1 => 1);
+		} split(/\n/, $ARGV[1]);
+		for my $elem (map {
+				/^([0-9a-f]+) (.*)$/;
+				[$1 => $2];
+			} split(/\n/, $ARGV[2])) {
+			if (!exists $not_in_next{$elem->[0]}) {
+				if ($msg) {
+					print STDERR $msg;
+					undef $msg;
+				}
+				print STDERR " $elem->[1]\n";
+			}
+		}
+	' "$topic" "$not_in_next" "$not_in_master"
+	exit 1
+fi
+
+<<\DOC_END
+
+This sample hook safeguards topic branches that have been
+published from being rewound.
+
+The workflow assumed here is:
+
+ * Once a topic branch forks from "master", "master" is never
+   merged into it again (either directly or indirectly).
+
+ * Once a topic branch is fully cooked and merged into "master",
+   it is deleted.  If you need to build on top of it to correct
+   earlier mistakes, a new topic branch is created by forking at
+   the tip of the "master".  This is not strictly necessary, but
+   it makes it easier to keep your history simple.
+
+ * Whenever you need to test or publish your changes to topic
+   branches, merge them into "next" branch.
+
+The script, being an example, hardcodes the publish branch name
+to be "next", but it is trivial to make it configurable via
+$GIT_DIR/config mechanism.
+
+With this workflow, you would want to know:
+
+(1) ... if a topic branch has ever been merged to "next".  Young
+    topic branches can have stupid mistakes you would rather
+    clean up before publishing, and things that have not been
+    merged into other branches can be easily rebased without
+    affecting other people.  But once it is published, you would
+    not want to rewind it.
+
+(2) ... if a topic branch has been fully merged to "master".
+    Then you can delete it.  More importantly, you should not
+    build on top of it -- other people may already want to
+    change things related to the topic as patches against your
+    "master", so if you need further changes, it is better to
+    fork the topic (perhaps with the same name) afresh from the
+    tip of "master".
+
+Let's look at this example:
+
+		   o---o---o---o---o---o---o---o---o---o "next"
+		  /       /           /           /
+		 /   a---a---b A     /           /
+		/   /               /           /
+	       /   /   c---c---c---c B         /
+	      /   /   /             \         /
+	     /   /   /   b---b C     \       /
+	    /   /   /   /             \     /
+    ---o---o---o---o---o---o---o---o---o---o---o "master"
+
+
+A, B and C are topic branches.
+
+ * A has one fix since it was merged up to "next".
+
+ * B has finished.  It has been fully merged up to "master" and "next",
+   and is ready to be deleted.
+
+ * C has not merged to "next" at all.
+
+We would want to allow C to be rebased, refuse A, and encourage
+B to be deleted.
+
+To compute (1):
+
+	git rev-list ^master ^topic next
+	git rev-list ^master        next
+
+	if these match, topic has not merged in next at all.
+
+To compute (2):
+
+	git rev-list master..topic
+
+	if this is empty, it is fully merged to "master".
+
+DOC_END
+
+
+---
+Path: .git/hooks/pre-commit.sample
+---
+#!/bin/sh
+#
+# An example hook script to verify what is about to be committed.
+# Called by "git commit" with no arguments.  The hook should
+# exit with non-zero status after issuing an appropriate message if
+# it wants to stop the commit.
+#
+# To enable this hook, rename this file to "pre-commit".
+
+if git rev-parse --verify HEAD >/dev/null 2>&1
+then
+	against=HEAD
+else
+	# Initial commit: diff against an empty tree object
+	against=$(git hash-object -t tree /dev/null)
+fi
+
+# If you want to allow non-ASCII filenames set this variable to true.
+allownonascii=$(git config --type=bool hooks.allownonascii)
+
+# Redirect output to stderr.
+exec 1>&2
+
+# Cross platform projects tend to avoid non-ASCII filenames; prevent
+# them from being added to the repository. We exploit the fact that the
+# printable range starts at the space character and ends with tilde.
+if [ "$allownonascii" != "true" ] &&
+	# Note that the use of brackets around a tr range is ok here, (it's
+	# even required, for portability to Solaris 10's /usr/bin/tr), since
+	# the square bracket bytes happen to fall in the designated range.
+	test $(git diff --cached --name-only --diff-filter=A -z $against |
+	  LC_ALL=C tr -d '[ -~]\0' | wc -c) != 0
+then
+	cat <<\EOF
+Error: Attempt to add a non-ASCII file name.
+
+This can cause problems if you want to work with people on other platforms.
+
+To be portable it is advisable to rename the file.
+
+If you know what you are doing you can disable this check using:
+
+  git config hooks.allownonascii true
+EOF
+	exit 1
+fi
+
+# If there are whitespace errors, print the offending file names and fail.
+exec git diff-index --check --cached $against --
+
+
+---
+Path: .git/hooks/applypatch-msg.sample
+---
+#!/bin/sh
+#
+# An example hook script to check the commit log message taken by
+# applypatch from an e-mail message.
+#
+# The hook should exit with non-zero status after issuing an
+# appropriate message if it wants to stop the commit.  The hook is
+# allowed to edit the commit message file.
+#
+# To enable this hook, rename this file to "applypatch-msg".
+
+. git-sh-setup
+commitmsg="$(git rev-parse --git-path hooks/commit-msg)"
+test -x "$commitmsg" && exec "$commitmsg" ${1+"$@"}
+:
+
+
+---
+Path: .git/hooks/fsmonitor-watchman.sample
+---
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use IPC::Open2;
+
+# An example hook script to integrate Watchman
+# (https://facebook.github.io/watchman/) with git to speed up detecting
+# new and modified files.
+#
+# The hook is passed a version (currently 2) and last update token
+# formatted as a string and outputs to stdout a new update token and
+# all files that have been modified since the update token. Paths must
+# be relative to the root of the working tree and separated by a single NUL.
+#
+# To enable this hook, rename this file to "query-watchman" and set
+# 'git config core.fsmonitor .git/hooks/query-watchman'
+#
+my ($version, $last_update_token) = @ARGV;
+
+# Uncomment for debugging
+# print STDERR "$0 $version $last_update_token\n";
+
+# Check the hook interface version
+if ($version ne 2) {
+	die "Unsupported query-fsmonitor hook version '$version'.\n" .
+	    "Falling back to scanning...\n";
+}
+
+my $git_work_tree = get_working_dir();
+
+my $retry = 1;
+
+my $json_pkg;
+eval {
+	require JSON::XS;
+	$json_pkg = "JSON::XS";
+	1;
+} or do {
+	require JSON::PP;
+	$json_pkg = "JSON::PP";
+};
+
+launch_watchman();
+
+sub launch_watchman {
+	my $o = watchman_query();
+	if (is_work_tree_watched($o)) {
+		output_result($o->{clock}, @{$o->{files}});
+	}
+}
+
+sub output_result {
+	my ($clockid, @files) = @_;
+
+	# Uncomment for debugging watchman output
+	# open (my $fh, ">", ".git/watchman-output.out");
+	# binmode $fh, ":utf8";
+	# print $fh "$clockid\n@files\n";
+	# close $fh;
+
+	binmode STDOUT, ":utf8";
+	print $clockid;
+	print "\0";
+	local $, = "\0";
+	print @files;
+}
+
+sub watchman_clock {
+	my $response = qx/watchman clock "$git_work_tree"/;
+	die "Failed to get clock id on '$git_work_tree'.\n" .
+		"Falling back to scanning...\n" if $? != 0;
+
+	return $json_pkg->new->utf8->decode($response);
+}
+
+sub watchman_query {
+	my $pid = open2(\*CHLD_OUT, \*CHLD_IN, 'watchman -j --no-pretty')
+	or die "open2() failed: $!\n" .
+	"Falling back to scanning...\n";
+
+	# In the query expression below we're asking for names of files that
+	# changed since $last_update_token but not from the .git folder.
+	#
+	# To accomplish this, we're using the "since" generator to use the
+	# recency index to select candidate nodes and "fields" to limit the
+	# output to file names only. Then we're using the "expression" term to
+	# further constrain the results.
+	my $last_update_line = "";
+	if (substr($last_update_token, 0, 1) eq "c") {
+		$last_update_token = "\"$last_update_token\"";
+		$last_update_line = qq[\n"since": $last_update_token,];
+	}
+	my $query = <<"	END";
+		["query", "$git_work_tree", {$last_update_line
+			"fields": ["name"],
+			"expression": ["not", ["dirname", ".git"]]
+		}]
+	END
+
+	# Uncomment for debugging the watchman query
+	# open (my $fh, ">", ".git/watchman-query.json");
+	# print $fh $query;
+	# close $fh;
+
+	print CHLD_IN $query;
+	close CHLD_IN;
+	my $response = do {local $/; <CHLD_OUT>};
+
+	# Uncomment for debugging the watch response
+	# open ($fh, ">", ".git/watchman-response.json");
+	# print $fh $response;
+	# close $fh;
+
+	die "Watchman: command returned no output.\n" .
+	"Falling back to scanning...\n" if $response eq "";
+	die "Watchman: command returned invalid output: $response\n" .
+	"Falling back to scanning...\n" unless $response =~ /^\{/;
+
+	return $json_pkg->new->utf8->decode($response);
+}
+
+sub is_work_tree_watched {
+	my ($output) = @_;
+	my $error = $output->{error};
+	if ($retry > 0 and $error and $error =~ m/unable to resolve root .* directory (.*) is not watched/) {
+		$retry--;
+		my $response = qx/watchman watch "$git_work_tree"/;
+		die "Failed to make watchman watch '$git_work_tree'.\n" .
+		    "Falling back to scanning...\n" if $? != 0;
+		$output = $json_pkg->new->utf8->decode($response);
+		$error = $output->{error};
+		die "Watchman: $error.\n" .
+		"Falling back to scanning...\n" if $error;
+
+		# Uncomment for debugging watchman output
+		# open (my $fh, ">", ".git/watchman-output.out");
+		# close $fh;
+
+		# Watchman will always return all files on the first query so
+		# return the fast "everything is dirty" flag to git and do the
+		# Watchman query just to get it over with now so we won't pay
+		# the cost in git to look up each individual file.
+		my $o = watchman_clock();
+		$error = $output->{error};
+
+		die "Watchman: $error.\n" .
+		"Falling back to scanning...\n" if $error;
+
+		output_result($o->{clock}, ("/"));
+		$last_update_token = $o->{clock};
+
+		eval { launch_watchman() };
+		return 0;
+	}
+
+	die "Watchman: $error.\n" .
+	"Falling back to scanning...\n" if $error;
+
+	return 1;
+}
+
+sub get_working_dir {
+	my $working_dir;
+	if ($^O =~ 'msys' || $^O =~ 'cygwin') {
+		$working_dir = Win32::GetCwd();
+		$working_dir =~ tr/\\/\//;
+	} else {
+		require Cwd;
+		$working_dir = Cwd::cwd();
+	}
+
+	return $working_dir;
+}
+
+
+---
+Path: .git/hooks/pre-receive.sample
+---
+#!/bin/sh
+#
+# An example hook script to make use of push options.
+# The example simply echoes all push options that start with 'echoback='
+# and rejects all pushes when the "reject" push option is used.
+#
+# To enable this hook, rename this file to "pre-receive".
+
+if test -n "$GIT_PUSH_OPTION_COUNT"
+then
+	i=0
+	while test "$i" -lt "$GIT_PUSH_OPTION_COUNT"
+	do
+		eval "value=\$GIT_PUSH_OPTION_$i"
+		case "$value" in
+		echoback=*)
+			echo "echo from the pre-receive-hook: ${value#*=}" >&2
+			;;
+		reject)
+			exit 1
+		esac
+		i=$((i + 1))
+	done
+fi
+
+
+---
+Path: .git/hooks/prepare-commit-msg.sample
+---
+#!/bin/sh
+#
+# An example hook script to prepare the commit log message.
+# Called by "git commit" with the name of the file that has the
+# commit message, followed by the description of the commit
+# message's source.  The hook's purpose is to edit the commit
+# message file.  If the hook fails with a non-zero status,
+# the commit is aborted.
+#
+# To enable this hook, rename this file to "prepare-commit-msg".
+
+# This hook includes three examples. The first one removes the
+# "# Please enter the commit message..." help message.
+#
+# The second includes the output of "git diff --name-status -r"
+# into the message, just before the "git status" output.  It is
+# commented because it doesn't cope with --amend or with squashed
+# commits.
+#
+# The third example adds a Signed-off-by line to the message, that can
+# still be edited.  This is rarely a good idea.
+
+COMMIT_MSG_FILE=$1
+COMMIT_SOURCE=$2
+SHA1=$3
+
+/opt/local/bin/perl5.34 -i.bak -ne 'print unless(m/^. Please enter the commit message/..m/^#$/)' "$COMMIT_MSG_FILE"
+
+# case "$COMMIT_SOURCE,$SHA1" in
+#  ,|template,)
+#    /opt/local/bin/perl5.34 -i.bak -pe '
+#       print "\n" . `git diff --cached --name-status -r`
+# 	 if /^#/ && $first++ == 0' "$COMMIT_MSG_FILE" ;;
+#  *) ;;
+# esac
+
+# SOB=$(git var GIT_COMMITTER_IDENT | sed -n 's/^\(.*>\).*$/Signed-off-by: \1/p')
+# git interpret-trailers --in-place --trailer "$SOB" "$COMMIT_MSG_FILE"
+# if test -z "$COMMIT_SOURCE"
+# then
+#   /opt/local/bin/perl5.34 -i.bak -pe 'print "\n" if !$first_line++' "$COMMIT_MSG_FILE"
+# fi
+
+
+---
+Path: .git/hooks/post-update.sample
+---
+#!/bin/sh
+#
+# An example hook script to prepare a packed repository for use over
+# dumb transports.
+#
+# To enable this hook, rename this file to "post-update".
+
+exec git update-server-info
+
+
+---
+Path: .git/hooks/pre-merge-commit.sample
+---
+#!/bin/sh
+#
+# An example hook script to verify what is about to be committed.
+# Called by "git merge" with no arguments.  The hook should
+# exit with non-zero status after issuing an appropriate message to
+# stderr if it wants to stop the merge commit.
+#
+# To enable this hook, rename this file to "pre-merge-commit".
+
+. git-sh-setup
+test -x "$GIT_DIR/hooks/pre-commit" &&
+        exec "$GIT_DIR/hooks/pre-commit"
+:
+
+
+---
+Path: .git/hooks/pre-applypatch.sample
+---
+#!/bin/sh
+#
+# An example hook script to verify what is about to be committed
+# by applypatch from an e-mail message.
+#
+# The hook should exit with non-zero status after issuing an
+# appropriate message if it wants to stop the commit.
+#
+# To enable this hook, rename this file to "pre-applypatch".
+
+. git-sh-setup
+precommit="$(git rev-parse --git-path hooks/pre-commit)"
+test -x "$precommit" && exec "$precommit" ${1+"$@"}
+:
+
+
+---
+Path: .git/hooks/pre-push.sample
+---
+#!/bin/sh
+
+# An example hook script to verify what is about to be pushed.  Called by "git
+# push" after it has checked the remote status, but before anything has been
+# pushed.  If this script exits with a non-zero status nothing will be pushed.
+#
+# This hook is called with the following parameters:
+#
+# $1 -- Name of the remote to which the push is being done
+# $2 -- URL to which the push is being done
+#
+# If pushing without using a named remote those arguments will be equal.
+#
+# Information about the commits which are being pushed is supplied as lines to
+# the standard input in the form:
+#
+#   <local ref> <local oid> <remote ref> <remote oid>
+#
+# This sample shows how to prevent push of commits where the log message starts
+# with "WIP" (work in progress).
+
+remote="$1"
+url="$2"
+
+zero=$(git hash-object --stdin </dev/null | tr '[0-9a-f]' '0')
+
+while read local_ref local_oid remote_ref remote_oid
+do
+	if test "$local_oid" = "$zero"
+	then
+		# Handle delete
+		:
+	else
+		if test "$remote_oid" = "$zero"
+		then
+			# New branch, examine all commits
+			range="$local_oid"
+		else
+			# Update to existing branch, examine new commits
+			range="$remote_oid..$local_oid"
+		fi
+
+		# Check for WIP commit
+		commit=$(git rev-list -n 1 --grep '^WIP' "$range")
+		if test -n "$commit"
+		then
+			echo >&2 "Found WIP commit in $local_ref, not pushing"
+			exit 1
+		fi
+	fi
+done
+
+exit 0
+
+
+---
+Path: .git/hooks/update.sample
+---
+#!/bin/sh
+#
+# An example hook script to block unannotated tags from entering.
+# Called by "git receive-pack" with arguments: refname sha1-old sha1-new
+#
+# To enable this hook, rename this file to "update".
+#
+# Config
+# ------
+# hooks.allowunannotated
+#   This boolean sets whether unannotated tags will be allowed into the
+#   repository.  By default they won't be.
+# hooks.allowdeletetag
+#   This boolean sets whether deleting tags will be allowed in the
+#   repository.  By default they won't be.
+# hooks.allowmodifytag
+#   This boolean sets whether a tag may be modified after creation. By default
+#   it won't be.
+# hooks.allowdeletebranch
+#   This boolean sets whether deleting branches will be allowed in the
+#   repository.  By default they won't be.
+# hooks.denycreatebranch
+#   This boolean sets whether remotely creating branches will be denied
+#   in the repository.  By default this is allowed.
+#
+
+# --- Command line
+refname="$1"
+oldrev="$2"
+newrev="$3"
+
+# --- Safety check
+if [ -z "$GIT_DIR" ]; then
+	echo "Don't run this script from the command line." >&2
+	echo " (if you want, you could supply GIT_DIR then run" >&2
+	echo "  $0 <ref> <oldrev> <newrev>)" >&2
+	exit 1
+fi
+
+if [ -z "$refname" -o -z "$oldrev" -o -z "$newrev" ]; then
+	echo "usage: $0 <ref> <oldrev> <newrev>" >&2
+	exit 1
+fi
+
+# --- Config
+allowunannotated=$(git config --type=bool hooks.allowunannotated)
+allowdeletebranch=$(git config --type=bool hooks.allowdeletebranch)
+denycreatebranch=$(git config --type=bool hooks.denycreatebranch)
+allowdeletetag=$(git config --type=bool hooks.allowdeletetag)
+allowmodifytag=$(git config --type=bool hooks.allowmodifytag)
+
+# check for no description
+projectdesc=$(sed -e '1q' "$GIT_DIR/description")
+case "$projectdesc" in
+"Unnamed repository"* | "")
+	echo "*** Project description file hasn't been set" >&2
+	exit 1
+	;;
+esac
+
+# --- Check types
+# if $newrev is 0000...0000, it's a commit to delete a ref.
+zero=$(git hash-object --stdin </dev/null | tr '[0-9a-f]' '0')
+if [ "$newrev" = "$zero" ]; then
+	newrev_type=delete
+else
+	newrev_type=$(git cat-file -t $newrev)
+fi
+
+case "$refname","$newrev_type" in
+	refs/tags/*,commit)
+		# un-annotated tag
+		short_refname=${refname##refs/tags/}
+		if [ "$allowunannotated" != "true" ]; then
+			echo "*** The un-annotated tag, $short_refname, is not allowed in this repository" >&2
+			echo "*** Use 'git tag [ -a | -s ]' for tags you want to propagate." >&2
+			exit 1
+		fi
+		;;
+	refs/tags/*,delete)
+		# delete tag
+		if [ "$allowdeletetag" != "true" ]; then
+			echo "*** Deleting a tag is not allowed in this repository" >&2
+			exit 1
+		fi
+		;;
+	refs/tags/*,tag)
+		# annotated tag
+		if [ "$allowmodifytag" != "true" ] && git rev-parse $refname > /dev/null 2>&1
+		then
+			echo "*** Tag '$refname' already exists." >&2
+			echo "*** Modifying a tag is not allowed in this repository." >&2
+			exit 1
+		fi
+		;;
+	refs/heads/*,commit)
+		# branch
+		if [ "$oldrev" = "$zero" -a "$denycreatebranch" = "true" ]; then
+			echo "*** Creating a branch is not allowed in this repository" >&2
+			exit 1
+		fi
+		;;
+	refs/heads/*,delete)
+		# delete branch
+		if [ "$allowdeletebranch" != "true" ]; then
+			echo "*** Deleting a branch is not allowed in this repository" >&2
+			exit 1
+		fi
+		;;
+	refs/remotes/*,commit)
+		# tracking branch
+		;;
+	refs/remotes/*,delete)
+		# delete tracking branch
+		if [ "$allowdeletebranch" != "true" ]; then
+			echo "*** Deleting a tracking branch is not allowed in this repository" >&2
+			exit 1
+		fi
+		;;
+	*)
+		# Anything else (is there anything else?)
+		echo "*** Update hook: unknown type of update to ref $refname of type $newrev_type" >&2
+		exit 1
+		;;
+esac
+
+# --- Finished
+exit 0
+
+
+---
+Path: .git/hooks/push-to-checkout.sample
+---
+#!/bin/sh
+
+# An example hook script to update a checked-out tree on a git push.
+#
+# This hook is invoked by git-receive-pack(1) when it reacts to git
+# push and updates reference(s) in its repository, and when the push
+# tries to update the branch that is currently checked out and the
+# receive.denyCurrentBranch configuration variable is set to
+# updateInstead.
+#
+# By default, such a push is refused if the working tree and the index
+# of the remote repository has any difference from the currently
+# checked out commit; when both the working tree and the index match
+# the current commit, they are updated to match the newly pushed tip
+# of the branch. This hook is to be used to override the default
+# behaviour; however the code below reimplements the default behaviour
+# as a starting point for convenient modification.
+#
+# The hook receives the commit with which the tip of the current
+# branch is going to be updated:
+commit=$1
+
+# It can exit with a non-zero status to refuse the push (when it does
+# so, it must not modify the index or the working tree).
+die () {
+	echo >&2 "$*"
+	exit 1
+}
+
+# Or it can make any necessary changes to the working tree and to the
+# index to bring them to the desired state when the tip of the current
+# branch is updated to the new commit, and exit with a zero status.
+#
+# For example, the hook can simply run git read-tree -u -m HEAD "$1"
+# in order to emulate git fetch that is run in the reverse direction
+# with git push, as the two-tree form of git read-tree -u -m is
+# essentially the same as git switch or git checkout that switches
+# branches while keeping the local changes in the working tree that do
+# not interfere with the difference between the branches.
+
+# The below is a more-or-less exact translation to shell of the C code
+# for the default behaviour for git's push-to-checkout hook defined in
+# the push_to_deploy() function in builtin/receive-pack.c.
+#
+# Note that the hook will be executed from the repository directory,
+# not from the working tree, so if you want to perform operations on
+# the working tree, you will have to adapt your code accordingly, e.g.
+# by adding "cd .." or using relative paths.
+
+if ! git update-index -q --ignore-submodules --refresh
+then
+	die "Up-to-date check failed"
+fi
+
+if ! git diff-files --quiet --ignore-submodules --
+then
+	die "Working directory has unstaged changes"
+fi
+
+# This is a rough translation of:
+#
+#   head_has_history() ? "HEAD" : EMPTY_TREE_SHA1_HEX
+if git cat-file -e HEAD 2>/dev/null
+then
+	head=HEAD
+else
+	head=$(git hash-object -t tree --stdin </dev/null)
+fi
+
+if ! git diff-index --quiet --cached --ignore-submodules $head --
+then
+	die "Working directory has staged changes"
+fi
+
+if ! git read-tree -u -m "$commit"
+then
+	die "Could not update working tree to new HEAD"
+fi
+
+
+---
+Path: .git/refs/heads/master
+---
+25ade189fa61c0f7fa35745bd3943a9fc1ba426f
+
+
+---
+Path: .git/refs/remotes/origin/HEAD
+---
+ref: refs/remotes/origin/master
