@@ -8,6 +8,10 @@ Streamlined ComfyUI workflows.
 
 Please use this fork of Steerable Motion: [Steerable Motion Fork](https://github.com/Limbicnation/Steerable-Motion/commit/78e1b0eaa26c2fd5f9f8ab9985e6ee198f9ebfac). Download the `steerable-motion` directory and place it in your `custom-nodes` directory.
 
+Note: You might need these [tools](https://github.com/Limbicnation/ComfyUINodeToolbox/tree/main/ComfyUI_RandomSeedGeneratorNode) to avoid errors. Please also ensure to place the following tools in your `custom-nodes` directory:
+- [Ensure 3 Channel Image](https://github.com/Limbicnation/ComfyUINodeToolbox/tree/main/ComfyUI_Ensure_3_Channel_Image)
+- [Random Seed Generator Node](https://github.com/Limbicnation/ComfyUINodeToolbox/tree/main/ComfyUI_RandomSeedGeneratorNode)
+
 ## Image Processing Workflow
 
 Below are examples of the image processing workflow, showcasing the transition from low-resolution images to high-resolution outputs.
@@ -44,10 +48,18 @@ Below are examples of the image processing workflow, showcasing the transition f
 </table>
 
 ### [Mad Scientist Workflow](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/mad-scientist-scifi-character-v1.png)
-Note: You might need these [tools](https://github.com/Limbicnation/ComfyUINodeToolbox/tree/main/ComfyUI_RandomSeedGeneratorNode) to avoid errors.
 <table>
   <tr>
     <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/resized-mad-scientist-v1.jpg" alt="Mad Scientist Character" width="512"></td>
     <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/resized-mad-scientist-v1-workflow.jpg" alt="Mad Scientist Workflow" width="512"></td>
+  </tr>
+</table>
+
+### Canny Edge Detection and UV Polygon Inpainting [workflow](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/Inpaint_From_Canny_Lines_v1.json)
+
+<table>
+  <tr>
+    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/Inpaint_From_Canny_Lines_v1.jpg" alt="Canny Edge Detection" width="512"></td>
+    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/workflow_resized.jpg" alt="UV Polygon Inpainting" width="512"></td>
   </tr>
 </table>
