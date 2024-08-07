@@ -63,3 +63,21 @@ Below are examples of the image processing workflow, showcasing the transition f
     <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/workflow_resized.jpg" alt="UV Polygon Inpainting" width="512"></td>
   </tr>
 </table>
+
+### Depth ControlNet IP Adapter v3 Workflow [workflow]( https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/depth-workflow-controlnet-ip-adapter-v2.png)
+
+<table>
+  <tr>
+    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/Portrait.jpg" alt="Flux Thumbnail" width="512"></td>
+    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/depth-workflow-controlnet-ip-adapter-v3.jpg" alt="UV Polygon Inpainting" width="512"></td> 
+  </tr>
+</table>
+
+### FLUX Inpaint [workflow](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/Flux_Image2Image_Inpaint_V2.png)
+
+<table>
+  <tr>
+    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/Flux_512.jpg" alt="Flux Thumbnail" width="512"></td>
+    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/Flux_Image2Image_Inpaint_V2.jpg" alt="Flux Image2Image Inpaint V2 Workflow" width="512"></td> 
+  </tr>
+</table>
