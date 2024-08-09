@@ -1,0 +1,774 @@
+{
+  "last_node_id": 48,
+  "last_link_id": 76,
+  "nodes": [
+    {
+      "id": 29,
+      "type": "ImageScaleToTotalPixels",
+      "pos": [
+        760,
+        320
+      ],
+      "size": {
+        "0": 320,
+        "1": 80
+      },
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 39
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            41
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScaleToTotalPixels"
+      },
+      "widgets_values": [
+        "nearest-exact",
+        0.39
+      ]
+    },
+    {
+      "id": 35,
+      "type": "VAEEncode",
+      "pos": [
+        1450,
+        730
+      ],
+      "size": {
+        "0": 210,
+        "1": 50
+      },
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 61
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            48
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEEncode"
+      }
+    },
+    {
+      "id": 39,
+      "type": "Anything Everywhere",
+      "pos": [
+        870,
+        1240
+      ],
+      "size": {
+        "0": 210,
+        "1": 80
+      },
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "*",
+          "link": 54,
+          "color_on": "#cf876f"
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Anything Everywhere",
+        "group_restricted": 0,
+        "color_restricted": 0
+      },
+      "widgets_values": [
+        "[[tensor([[[-2.9114, -1.9603,  3.6244,  ...,  0.1385,  0.3407, -0.2686],\n         [-0.7014, -0.4478, -1.3892,  ...,  0.5576,  0.2872, -0.8379],\n         [-0.0720, -1.1494, -0.4907,  ..., -0.0556, -0.0938,  0.5198],\n         ...,\n         [-1.3212, -0.1089, -0.0600,  ..., -0.6926,  0.5752,  1.1590],\n         [-1.3386, -0.1073, -0.0498,  ..., -0.7401,  0.4899,  1.2186],\n         [-1.3324, -0.1086, -0.0162,  ..., -0.8432,  0.4065,  1.0496]]]), {'pooled_output': tensor([[ 0.1598, -0.1435, -0.5645,  ..., -1.1085, -1.2911,  0.0498]])}]]"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "CLIPTextEncode",
+      "pos": [
+        400,
+        1430
+      ],
+      "size": {
+        "0": 400,
+        "1": 200
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            55,
+            58
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "muted, subdued, dark, flat, two-dimensional, stiff, rigid, blank, \nunengaging, sorrowful, melancholic, desolate, bleak, uninviting, \nlackluster, uninspired, poorly-lit, no textures, no details, simple \ncomposition, minimal depth, no movement"
+      ]
+    },
+    {
+      "id": 40,
+      "type": "Anything Everywhere",
+      "pos": [
+        850,
+        1400
+      ],
+      "size": {
+        "0": 210,
+        "1": 80
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "*",
+          "link": 55,
+          "color_on": "#cf876f"
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Anything Everywhere",
+        "group_restricted": 0,
+        "color_restricted": 0
+      },
+      "widgets_values": [
+        "[[tensor([[[-2.9114, -1.9603,  3.6244,  ...,  0.1385,  0.3407, -0.2686],\n         [ 0.9742,  0.4713,  0.0927,  ..., -0.0285,  0.0321, -0.5514],\n         [ 0.3081, -0.3057,  0.8648,  ...,  0.1299, -0.5346,  0.8542],\n         ...,\n         [ 0.8141, -0.0570,  0.4422,  ..., -0.2662, -0.4694,  1.1598],\n         [ 0.7953, -0.0497,  0.4448,  ..., -0.3877, -0.5214,  1.1563],\n         [ 0.8159,  0.0165,  0.4729,  ..., -0.2698, -0.7195,  0.7672]]]), {'pooled_output': tensor([[-1.0253,  0.4299, -0.5867,  ..., -1.6855, -1.2445,  0.9016]])}]]"
+      ]
+    },
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        385.14900000000017,
+        316.73100000000017
+      ],
+      "size": [
+        320,
+        310
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            39
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "stylized_image.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "PreviewImage",
+      "pos": [
+        3050,
+        300
+      ],
+      "size": {
+        "0": 210,
+        "1": 250
+      },
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 71
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 34,
+      "type": "KSampler",
+      "pos": [
+        1880,
+        730
+      ],
+      "size": {
+        "0": 320,
+        "1": 260
+      },
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": null
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 57
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 58
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 48
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            75
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler"
+      },
+      "widgets_values": [
+        151876849618963,
+        "randomize",
+        30,
+        7,
+        "euler",
+        "normal",
+        0.25
+      ]
+    },
+    {
+      "id": 10,
+      "type": "CLIPTextEncode",
+      "pos": [
+        400,
+        1170
+      ],
+      "size": {
+        "0": 400,
+        "1": 200
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            54,
+            57
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "Vibrant, expressive, and dreamlike depiction of a horse in the style of \nVincent van Gogh, reminiscent of his post-Impressionist masterpieces. The \nhorse is positioned prominently within the canvas, its forms and textures \nevoking a sense of dynamic movement and energy"
+      ]
+    },
+    {
+      "id": 24,
+      "type": "CheckpointLoaderSimple",
+      "pos": [
+        400,
+        820
+      ],
+      "size": {
+        "0": 320,
+        "1": 100
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            74
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            64
+          ],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            26
+          ],
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CheckpointLoaderSimple"
+      },
+      "widgets_values": [
+        "Juggernaut_X_RunDiffusion_Hyper.safetensors"
+      ]
+    },
+    {
+      "id": 25,
+      "type": "Anything Everywhere3",
+      "pos": [
+        750,
+        830
+      ],
+      "size": {
+        "0": 210,
+        "1": 70
+      },
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "MODEL",
+          "type": "*",
+          "link": 74,
+          "color_on": "#8978a7"
+        },
+        {
+          "name": "CLIP",
+          "type": "*",
+          "link": 64,
+          "color_on": "#eacb8b"
+        },
+        {
+          "name": "VAE",
+          "type": "*",
+          "link": 26,
+          "color_on": "#be616b"
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Anything Everywhere3",
+        "group_restricted": 0,
+        "color_restricted": 0
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 31,
+      "type": "ImageScaleBy",
+      "pos": [
+        1180,
+        320
+      ],
+      "size": {
+        "0": 320,
+        "1": 80
+      },
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 41
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            61
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScaleBy"
+      },
+      "widgets_values": [
+        "nearest-exact",
+        2
+      ]
+    },
+    {
+      "id": 36,
+      "type": "VAEDecode",
+      "pos": [
+        2650,
+        730
+      ],
+      "size": {
+        "0": 210,
+        "1": 50
+      },
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 76
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            70,
+            71
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      }
+    },
+    {
+      "id": 26,
+      "type": "SaveImage",
+      "pos": [
+        3080,
+        940
+      ],
+      "size": [
+        320,
+        270
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 70
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "AuraFlow/AuraFlow"
+      ]
+    },
+    {
+      "id": 48,
+      "type": "NNLatentUpscale",
+      "pos": [
+        2250,
+        740
+      ],
+      "size": {
+        "0": 320,
+        "1": 80
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "link": 75
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            76
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "NNLatentUpscale"
+      },
+      "widgets_values": [
+        "SDXL",
+        2
+      ]
+    }
+  ],
+  "links": [
+    [
+      26,
+      24,
+      2,
+      25,
+      2,
+      "VAE"
+    ],
+    [
+      39,
+      1,
+      0,
+      29,
+      0,
+      "IMAGE"
+    ],
+    [
+      41,
+      29,
+      0,
+      31,
+      0,
+      "IMAGE"
+    ],
+    [
+      48,
+      35,
+      0,
+      34,
+      3,
+      "LATENT"
+    ],
+    [
+      54,
+      10,
+      0,
+      39,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      55,
+      12,
+      0,
+      40,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      57,
+      10,
+      0,
+      34,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      58,
+      12,
+      0,
+      34,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      61,
+      31,
+      0,
+      35,
+      0,
+      "IMAGE"
+    ],
+    [
+      64,
+      24,
+      1,
+      25,
+      1,
+      "CLIP"
+    ],
+    [
+      70,
+      36,
+      0,
+      26,
+      0,
+      "IMAGE"
+    ],
+    [
+      71,
+      36,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      74,
+      24,
+      0,
+      25,
+      0,
+      "MODEL"
+    ],
+    [
+      75,
+      34,
+      0,
+      48,
+      0,
+      "LATENT"
+    ],
+    [
+      76,
+      48,
+      0,
+      36,
+      0,
+      "LATENT"
+    ]
+  ],
+  "groups": [
+    {
+      "title": "Text Prompts",
+      "bounding": [
+        390,
+        1040,
+        710,
+        630
+      ],
+      "color": "#b58b2a",
+      "font_size": 24,
+      "locked": false
+    },
+    {
+      "title": "Checkpoint Loader",
+      "bounding": [
+        390,
+        690,
+        590,
+        320
+      ],
+      "color": "#3f789e",
+      "font_size": 24,
+      "locked": false
+    },
+    {
+      "title": "Encode and Decode Latent Image",
+      "bounding": [
+        1440,
+        590,
+        1460,
+        460
+      ],
+      "color": "#8A8",
+      "font_size": 24,
+      "locked": false
+    },
+    {
+      "title": "Preprocess Image for VAE Encoder Training",
+      "bounding": [
+        750,
+        190,
+        770,
+        290
+      ],
+      "color": "#3f789e",
+      "font_size": 24,
+      "locked": false
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.6209213230591556,
+      "offset": [
+        5.947867261900058,
+        79.49731674191565
+      ]
+    }
+  },
+  "version": 0.4
+}
