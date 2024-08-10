@@ -1,0 +1,422 @@
+{
+  "last_node_id": 62,
+  "last_link_id": 202,
+  "nodes": [
+    {
+      "id": 50,
+      "type": "SaveImage",
+      "pos": [
+        3730,
+        770
+      ],
+      "size": [
+        320,
+        270
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 195
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "FastStyleTransfer/FastStyleTransfer"
+      ]
+    },
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        780,
+        310
+      ],
+      "size": [
+        320,
+        310
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            201
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "00000-1019676210.png",
+        "image"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "LoadImage",
+      "pos": [
+        780,
+        950
+      ],
+      "size": [
+        320,
+        310
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            193,
+            200
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "van-gogh-self-portrait.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 48,
+      "type": "Convert Color Space",
+      "pos": [
+        2270,
+        870
+      ],
+      "size": {
+        "0": 320,
+        "1": 80
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 202
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            167,
+            170
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Convert Color Space"
+      },
+      "widgets_values": [
+        "HSV",
+        "HSL"
+      ]
+    },
+    {
+      "id": 46,
+      "type": "DDColor_Colorize",
+      "pos": [
+        2700,
+        870
+      ],
+      "size": {
+        "0": 320,
+        "1": 80
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 167
+        }
+      ],
+      "outputs": [
+        {
+          "name": "colorized_image",
+          "type": "IMAGE",
+          "links": [
+            192
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DDColor_Colorize"
+      },
+      "widgets_values": [
+        512,
+        "ddcolor_artistic.pth"
+      ]
+    },
+    {
+      "id": 20,
+      "type": "FastStyleTransferNode",
+      "pos": [
+        1850,
+        620
+      ],
+      "size": {
+        "0": 320,
+        "1": 100
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "content_image",
+          "type": "IMAGE",
+          "link": 201,
+          "slot_index": 0
+        },
+        {
+          "name": "style_image",
+          "type": "IMAGE",
+          "link": 200
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            202
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "FastStyleTransferNode"
+      },
+      "widgets_values": [
+        384,
+        1024
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 62,
+      "type": "ColorMatch",
+      "pos": [
+        3190,
+        770
+      ],
+      "size": {
+        "0": 320,
+        "1": 100
+      },
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_ref",
+          "type": "IMAGE",
+          "link": 193
+        },
+        {
+          "name": "image_target",
+          "type": "IMAGE",
+          "link": 192
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            194,
+            195
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ColorMatch"
+      },
+      "widgets_values": [
+        "hm-mvgd-hm",
+        0.75
+      ]
+    },
+    {
+      "id": 8,
+      "type": "PreviewImage",
+      "pos": [
+        2700,
+        550
+      ],
+      "size": {
+        "0": 210,
+        "1": 250
+      },
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 194
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 52,
+      "type": "PreviewImage",
+      "pos": [
+        2730,
+        1050
+      ],
+      "size": [
+        210,
+        250
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 170
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    }
+  ],
+  "links": [
+    [
+      167,
+      48,
+      0,
+      46,
+      0,
+      "IMAGE"
+    ],
+    [
+      170,
+      48,
+      0,
+      52,
+      0,
+      "IMAGE"
+    ],
+    [
+      192,
+      46,
+      0,
+      62,
+      1,
+      "IMAGE"
+    ],
+    [
+      193,
+      9,
+      0,
+      62,
+      0,
+      "IMAGE"
+    ],
+    [
+      194,
+      62,
+      0,
+      8,
+      0,
+      "IMAGE"
+    ],
+    [
+      195,
+      62,
+      0,
+      50,
+      0,
+      "IMAGE"
+    ],
+    [
+      200,
+      9,
+      0,
+      20,
+      1,
+      "IMAGE"
+    ],
+    [
+      201,
+      1,
+      0,
+      20,
+      0,
+      "IMAGE"
+    ],
+    [
+      202,
+      20,
+      0,
+      48,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.5559917313492356,
+      "offset": [
+        -191.08005220914575,
+        690.917016283435
+      ]
+    }
+  },
+  "version": 0.4
+}
