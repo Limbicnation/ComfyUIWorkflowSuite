@@ -81,3 +81,12 @@ Below are examples of the image processing workflow, showcasing the transition f
     <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/Flux_Image2Image_Inpaint_V2.jpg" alt="Flux Image2Image Inpaint V2 Workflow" width="512"></td> 
   </tr>
 </table>
+
+### [Flux Character Creator V2](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/Flux_Character_Creator_V2.png)
+
+<table>
+  <tr>
+    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/FluxCharacterCreator_V2.png" alt="Flux Thumbnail" width="512"></td>
+    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/FluxCharCreator_Workflow_resized.jpg" alt="Flux Image2Image Inpaint V2 Workflow" width="512"></td>
+  </tr>
+</table>
