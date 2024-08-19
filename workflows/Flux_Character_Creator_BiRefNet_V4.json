@@ -1,0 +1,1341 @@
+{
+  "last_node_id": 156,
+  "last_link_id": 291,
+  "nodes": [
+    {
+      "id": 66,
+      "type": "DualCLIPLoader",
+      "pos": [
+        -209.64022919042768,
+        932.8487154467655
+      ],
+      "size": {
+        "0": 320,
+        "1": 110
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            148,
+            201
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DualCLIPLoader"
+      },
+      "widgets_values": [
+        "t5xxl_fp16.safetensors",
+        "clip_l.safetensors",
+        "flux"
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 67,
+      "type": "UNETLoader",
+      "pos": [
+        -209.64022919042768,
+        801.8487154467655
+      ],
+      "size": {
+        "0": 320,
+        "1": 80
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            180
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UNETLoader"
+      },
+      "widgets_values": [
+        "flux1-schnell.safetensors",
+        "fp8_e5m2"
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 68,
+      "type": "VAELoader",
+      "pos": [
+        -209.64022919042768,
+        1091.848715446765
+      ],
+      "size": {
+        "0": 320,
+        "1": 60
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            177
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "ae.safetensors"
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 97,
+      "type": "CLIPTextEncode",
+      "pos": [
+        209.35977080957252,
+        771.8487154467655
+      ],
+      "size": {
+        "0": 430,
+        "1": 200
+      },
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 148
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            238,
+            259
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "CLIP Text Encode (Positive Prompt)",
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "A 3D (front facing:1.25) (full-body:1.2) (standing:1.15) character on a (grey background:1.25) \ninspired by a futuristic warrior archetype, equipped with a sleek, armored suit \nfeaturing vibrant neon accents (weight:1.25) and intricate metallic plating. The \ncharacter is in an \"A\" pose, wearing a menacing helmet with a darkened visor and \naugmented optics. Setting weight: 1.5 The setting is a dystopian cyberpunk cityscape at \nnight, bathed in the warm glow of electric lights."
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 106,
+      "type": "RandomSeedGenerator",
+      "pos": [
+        1560,
+        300
+      ],
+      "size": {
+        "0": 210,
+        "1": 30
+      },
+      "flags": {
+        "collapsed": true
+      },
+      "order": 3,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "Random Seed",
+          "type": "INT",
+          "links": [
+            256
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RandomSeedGenerator"
+      },
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 109,
+      "type": "KSampler",
+      "pos": [
+        949.3597708095728,
+        571.8487154467653
+      ],
+      "size": {
+        "0": 320,
+        "1": 260
+      },
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 225
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 241
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 242
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 231
+        },
+        {
+          "name": "seed",
+          "type": "INT",
+          "link": 257,
+          "widget": {
+            "name": "seed"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            173
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler"
+      },
+      "widgets_values": [
+        5,
+        "fixed",
+        20,
+        1,
+        "ipndm",
+        "normal",
+        0.9500000000000001
+      ],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 111,
+      "type": "ConditioningZeroOut",
+      "pos": [
+        680,
+        590
+      ],
+      "size": {
+        "0": 320,
+        "1": 30
+      },
+      "flags": {
+        "collapsed": true
+      },
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 238
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            242,
+            245
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ConditioningZeroOut",
+        "ttNbgOverride": {
+          "color": "#233",
+          "bgcolor": "#355",
+          "groupcolor": "#8AA"
+        }
+      },
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 112,
+      "type": "SDXLEmptyLatentSizePicker+",
+      "pos": [
+        362,
+        330
+      ],
+      "size": {
+        "0": 320,
+        "1": 170
+      },
+      "flags": {
+        "collapsed": false
+      },
+      "order": 4,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            231,
+            232
+          ],
+          "slot_index": 0,
+          "shape": 3
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SDXLEmptyLatentSizePicker+",
+        "ttNbgOverride": {
+          "color": "#233",
+          "bgcolor": "#355",
+          "groupcolor": "#8AA"
+        }
+      },
+      "widgets_values": [
+        "1024x1024 (1.0)",
+        2,
+        0,
+        0
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 113,
+      "type": "VAEDecode",
+      "pos": [
+        1542,
+        570
+      ],
+      "size": {
+        "0": 210,
+        "1": 50
+      },
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 173
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            219
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 114,
+      "type": "Anything Everywhere3",
+      "pos": [
+        210.35977080957252,
+        1091.848715446765
+      ],
+      "size": {
+        "0": 210,
+        "1": 70
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "anything",
+          "type": "*",
+          "link": null
+        },
+        {
+          "name": "anything",
+          "type": "*",
+          "link": null
+        },
+        {
+          "name": "VAE",
+          "type": "*",
+          "link": 177,
+          "color_on": "#be616b"
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Anything Everywhere3",
+        "group_restricted": 0,
+        "color_restricted": 0
+      },
+      "widgets_values": [],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 117,
+      "type": "ModelSamplingAuraFlow",
+      "pos": [
+        -130,
+        570
+      ],
+      "size": {
+        "0": 320,
+        "1": 60
+      },
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 180
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            225,
+            226
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ModelSamplingAuraFlow"
+      },
+      "widgets_values": [
+        1
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 121,
+      "type": "AuraSR.AuraSRUpscaler",
+      "pos": [
+        1910,
+        870
+      ],
+      "size": {
+        "0": 320,
+        "1": 200
+      },
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 280
+        },
+        {
+          "name": "transparency_mask",
+          "type": "MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            277
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AuraSR.AuraSRUpscaler",
+        "ttNbgOverride": {
+          "color": "#233",
+          "bgcolor": "#355",
+          "groupcolor": "#8AA"
+        }
+      },
+      "widgets_values": [
+        "model.safetensors",
+        "4x",
+        true,
+        8,
+        "default",
+        true
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 123,
+      "type": "CLIPTextEncode",
+      "pos": [
+        949.3597708095728,
+        891.8487154467655
+      ],
+      "size": {
+        "0": 560,
+        "1": 230
+      },
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 201
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            241,
+            258
+          ],
+          "slot_index": 0
+        }
+      ],
+      "title": "CLIP Text Encode (Positive Prompt)",
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "A 3D (front facing:1.25) (full-body:1.3) (standing:1.15) character on a grey background inspired by a\nfuturistic warrior archetype, equipped with a sleek, armored suit featuring vibrant neon accents and\nintricate metallic plating. The character is in an \"A\" pose, wearing a menacing helmet with a darkened\nvisor and augmented optics. The setting is a dystopian cyberpunk cityscape at night, bathed in the warm\nglow of electric lights and enveloped in a moody, atmospheric haze. The scene captures the essence of a\nhigh-tech, post-apocalyptic future with rich textures and dynamic, cinematic lighting."
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 128,
+      "type": "InjectLatentNoise+",
+      "pos": [
+        1150,
+        190
+      ],
+      "size": {
+        "0": 320,
+        "1": 110
+      },
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "latent",
+          "type": "LATENT",
+          "link": null
+        },
+        {
+          "name": "noise_seed",
+          "type": "INT",
+          "link": 236,
+          "widget": {
+            "name": "noise_seed"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "InjectLatentNoise+",
+        "ttNbgOverride": {
+          "color": "#233",
+          "bgcolor": "#355",
+          "groupcolor": "#8AA"
+        }
+      },
+      "widgets_values": [
+        256,
+        "fixed",
+        4.5,
+        "false"
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 130,
+      "type": "VAEEncode",
+      "pos": [
+        1560,
+        190
+      ],
+      "size": {
+        "0": 210,
+        "1": 50
+      },
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 219
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEEncode",
+        "ttNbgOverride": {
+          "color": "#233",
+          "bgcolor": "#355",
+          "groupcolor": "#8AA"
+        }
+      },
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 131,
+      "type": "KSampler",
+      "pos": [
+        1880,
+        190
+      ],
+      "size": {
+        "0": 320,
+        "1": 260
+      },
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 226
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 260
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 245
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 232
+        },
+        {
+          "name": "seed",
+          "type": "INT",
+          "link": 256,
+          "widget": {
+            "name": "seed"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            227
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler"
+      },
+      "widgets_values": [
+        5,
+        "fixed",
+        20,
+        1,
+        "ipndm_v",
+        "karras",
+        1
+      ],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 132,
+      "type": "VAEDecode",
+      "pos": [
+        2310,
+        190
+      ],
+      "size": {
+        "0": 210,
+        "1": 50
+      },
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 227
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            280
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 133,
+      "type": "RandomSeedGenerator",
+      "pos": [
+        860,
+        190
+      ],
+      "size": {
+        "0": 200,
+        "1": 30
+      },
+      "flags": {
+        "collapsed": false
+      },
+      "order": 5,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "Random Seed",
+          "type": "INT",
+          "links": [
+            236
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RandomSeedGenerator"
+      },
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 141,
+      "type": "RandomSeedGenerator",
+      "pos": [
+        680,
+        730
+      ],
+      "size": {
+        "0": 210,
+        "1": 30
+      },
+      "flags": {
+        "collapsed": true
+      },
+      "order": 6,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "Random Seed",
+          "type": "INT",
+          "links": [
+            257
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RandomSeedGenerator"
+      },
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 142,
+      "type": "ConditioningConcat",
+      "pos": [
+        1540,
+        730
+      ],
+      "size": {
+        "0": 380,
+        "1": 50
+      },
+      "flags": {
+        "collapsed": true
+      },
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "conditioning_to",
+          "type": "CONDITIONING",
+          "link": 258
+        },
+        {
+          "name": "conditioning_from",
+          "type": "CONDITIONING",
+          "link": 259
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            260
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ConditioningConcat",
+        "ttNbgOverride": {
+          "color": "#233",
+          "bgcolor": "#355",
+          "groupcolor": "#8AA"
+        }
+      },
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 145,
+      "type": "PreviewImage",
+      "pos": [
+        3000,
+        1140
+      ],
+      "size": {
+        "0": 210,
+        "1": 250
+      },
+      "flags": {
+        "collapsed": true
+      },
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 285
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage",
+        "ttNbgOverride": {
+          "color": "#233",
+          "bgcolor": "#355",
+          "groupcolor": "#8AA"
+        }
+      },
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 153,
+      "type": "BiRefNet_ModelLoader_Zho",
+      "pos": [
+        2250,
+        870
+      ],
+      "size": {
+        "0": 320,
+        "1": 60
+      },
+      "flags": {
+        "collapsed": false
+      },
+      "order": 7,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "birefnetmodel",
+          "type": "BRNMODEL",
+          "links": [
+            268
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BiRefNet_ModelLoader_Zho"
+      },
+      "widgets_values": [
+        "BiRefNet-DIS_ep580.pth"
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 154,
+      "type": "BiRefNet_Zho",
+      "pos": [
+        2620,
+        870
+      ],
+      "size": {
+        "0": 240,
+        "1": 50
+      },
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "birefnetmodel",
+          "type": "BRNMODEL",
+          "link": 268
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 277
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            285,
+            287
+          ],
+          "slot_index": 0,
+          "shape": 3
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": [],
+          "slot_index": 1,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BiRefNet_Zho"
+      },
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 155,
+      "type": "SaveImage",
+      "pos": [
+        2950,
+        820
+      ],
+      "size": {
+        "0": 320,
+        "1": 270
+      },
+      "flags": {
+        "collapsed": false
+      },
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 287
+        }
+      ],
+      "properties": {
+        "ttNbgOverride": {
+          "color": "#233",
+          "bgcolor": "#355",
+          "groupcolor": "#8AA"
+        }
+      },
+      "widgets_values": [
+        "FCC/FCCv2"
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    }
+  ],
+  "links": [
+    [
+      148,
+      66,
+      0,
+      97,
+      0,
+      "CLIP"
+    ],
+    [
+      173,
+      109,
+      0,
+      113,
+      0,
+      "LATENT"
+    ],
+    [
+      177,
+      68,
+      0,
+      114,
+      2,
+      "VAE"
+    ],
+    [
+      180,
+      67,
+      0,
+      117,
+      0,
+      "MODEL"
+    ],
+    [
+      201,
+      66,
+      0,
+      123,
+      0,
+      "CLIP"
+    ],
+    [
+      219,
+      113,
+      0,
+      130,
+      0,
+      "IMAGE"
+    ],
+    [
+      225,
+      117,
+      0,
+      109,
+      0,
+      "MODEL"
+    ],
+    [
+      226,
+      117,
+      0,
+      131,
+      0,
+      "MODEL"
+    ],
+    [
+      227,
+      131,
+      0,
+      132,
+      0,
+      "LATENT"
+    ],
+    [
+      231,
+      112,
+      0,
+      109,
+      3,
+      "LATENT"
+    ],
+    [
+      232,
+      112,
+      0,
+      131,
+      3,
+      "LATENT"
+    ],
+    [
+      236,
+      133,
+      0,
+      128,
+      1,
+      "INT"
+    ],
+    [
+      238,
+      97,
+      0,
+      111,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      241,
+      123,
+      0,
+      109,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      242,
+      111,
+      0,
+      109,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      245,
+      111,
+      0,
+      131,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      256,
+      106,
+      0,
+      131,
+      4,
+      "INT"
+    ],
+    [
+      257,
+      141,
+      0,
+      109,
+      4,
+      "INT"
+    ],
+    [
+      258,
+      123,
+      0,
+      142,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      259,
+      97,
+      0,
+      142,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      260,
+      142,
+      0,
+      131,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      268,
+      153,
+      0,
+      154,
+      0,
+      "BRNMODEL"
+    ],
+    [
+      277,
+      121,
+      0,
+      154,
+      1,
+      "IMAGE"
+    ],
+    [
+      280,
+      132,
+      0,
+      121,
+      0,
+      "IMAGE"
+    ],
+    [
+      285,
+      154,
+      0,
+      145,
+      0,
+      "IMAGE"
+    ],
+    [
+      287,
+      154,
+      0,
+      155,
+      0,
+      "IMAGE"
+    ],
+    [
+      289,
+      68,
+      0,
+      113,
+      1,
+      "VAE"
+    ],
+    [
+      290,
+      68,
+      0,
+      130,
+      1,
+      "VAE"
+    ],
+    [
+      291,
+      68,
+      0,
+      132,
+      1,
+      "VAE"
+    ]
+  ],
+  "groups": [
+    {
+      "title": "Noise Injection 2.0",
+      "bounding": [
+        850,
+        70,
+        1700,
+        410
+      ],
+      "color": "#a1309b",
+      "font_size": 24,
+      "locked": false
+    },
+    {
+      "title": "Remove the background and enhance details using Aura SR and BiRefNet for superior quality and clarity.",
+      "bounding": [
+        1860,
+        740,
+        1440,
+        500
+      ],
+      "color": "#3f789e",
+      "font_size": 24,
+      "locked": false
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.9229599817706413,
+      "offset": [
+        658.5826816461811,
+        131.3236865746723
+      ]
+    }
+  },
+  "version": 0.4
+}
