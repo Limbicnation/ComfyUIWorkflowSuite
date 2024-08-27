@@ -1,4 +1,4 @@
-# ComfyUIWorkflowSuite
+# ComfyUIWorkflowSuite 🎨
 
 Streamlined ComfyUI workflows.
 
