@@ -1,0 +1,209 @@
+{
+  "last_node_id": 61,
+  "last_link_id": 70,
+  "nodes": [
+    {
+      "id": 57,
+      "type": "MultiplePathsInput",
+      "pos": {
+        "0": 1727.5753173828125,
+        "1": 717
+      },
+      "size": {
+        "0": 210,
+        "1": 82
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "path_1",
+          "type": "PATH",
+          "link": 69
+        }
+      ],
+      "outputs": [
+        {
+          "name": "paths",
+          "type": "PATH",
+          "links": [
+            70
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        1,
+        null
+      ]
+    },
+    {
+      "id": 55,
+      "type": "LoadVideo",
+      "pos": {
+        "0": 1355,
+        "1": 717
+      },
+      "size": {
+        "0": 319.1347351074219,
+        "1": 387.1347351074219
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "PATH",
+          "type": "PATH",
+          "links": [
+            69
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadVideo"
+      },
+      "widgets_values": [
+        "deforum_flowers.mp4",
+        "Video",
+        {
+          "hidden": false,
+          "paused": false,
+          "params": {}
+        }
+      ]
+    },
+    {
+      "id": 56,
+      "type": "Qwen2_VQA",
+      "pos": {
+        "0": 1999,
+        "1": 717
+      },
+      "size": {
+        "0": 322.1059265136719,
+        "1": 293.7331848144531
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source_path",
+          "type": "PATH",
+          "link": 70
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            68
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Qwen2_VQA"
+      },
+      "widgets_values": [
+        "Describe the video in detail",
+        "Qwen2-VL-2B-Instruct",
+        "none",
+        false,
+        0.7,
+        2048,
+        200704,
+        1003520,
+        1039,
+        "randomize"
+      ]
+    },
+    {
+      "id": 51,
+      "type": "DisplayText",
+      "pos": {
+        "0": 1581,
+        "1": 1160
+      },
+      "size": {
+        "0": 829.6454467773438,
+        "1": 155.36328125
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "link": 68,
+          "widget": {
+            "name": "text"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null,
+          "shape": 6
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DisplayText"
+      },
+      "widgets_values": [
+        "",
+        "The video features a vibrant and colorful abstract pattern that appears to be a mix of floral and geometric elements. The background is filled with a multitude of shapes and patterns, predominantly in shades of blue, red, and white. The shapes are irregular and dynamic, creating a sense of movement and energy. The patterns include various flowers, leaves, and other organic shapes that are interconnected and interlocking. The overall effect is one of complexity and depth, with each element contributing to the overall composition. The colors are bright and vivid, making the pattern stand out against the dark background. The video has a dynamic and lively feel, with the patterns shifting and changing in a seemingly random yet purposeful manner."
+      ]
+    }
+  ],
+  "links": [
+    [
+      68,
+      56,
+      0,
+      51,
+      0,
+      "STRING"
+    ],
+    [
+      69,
+      55,
+      0,
+      57,
+      0,
+      "PATH"
+    ],
+    [
+      70,
+      57,
+      0,
+      56,
+      0,
+      "PATH"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1.2284597357367277,
+      "offset": [
+        -1108.3811346609323,
+        -554.587089049355
+      ]
+    }
+  },
+  "version": 0.4
+}
