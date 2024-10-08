@@ -1,0 +1,697 @@
+{
+  "last_node_id": 42,
+  "last_link_id": 61,
+  "nodes": [
+    {
+      "id": 39,
+      "type": "VAELoader",
+      "pos": {
+        "0": 375,
+        "1": 820
+      },
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            55
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "ae.safetensors"
+      ]
+    },
+    {
+      "id": 27,
+      "type": "KSampler",
+      "pos": {
+        "0": 1420,
+        "1": 200
+      },
+      "size": {
+        "0": 315,
+        "1": 262
+      },
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 52
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 60
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 61
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 44
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            46
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "KSampler"
+      },
+      "widgets_values": [
+        208079985271086,
+        "randomize",
+        20,
+        8,
+        "ddpm",
+        "normal",
+        1
+      ]
+    },
+    {
+      "id": 34,
+      "type": "CLIPTextEncode",
+      "pos": {
+        "0": 375,
+        "1": 451
+      },
+      "size": {
+        "0": 400,
+        "1": 200
+      },
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 49
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            59
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "blurry, bad image, low quality"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CLIPTextEncode",
+      "pos": {
+        "0": 375,
+        "1": 221
+      },
+      "size": {
+        "0": 422.84503173828125,
+        "1": 164.31304931640625
+      },
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            58
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "Professional, cinematic photo. The digital poster for \"Potreon\" unfolds before us like a vibrant tapestry, its black background serving as a canvas for the kaleidoscopic abstract design that dominates the composition. At its center, the imposing letter \"P\", rendered in a deep, rich purple hue, stands sentinel, its bold lines and geometric shape imbuing the logo with a sense of modernity and flair. Surrounding the curvaceous \"O\" are an array of shapes and lines, each one bursting forth from the previous like ripples on a pond, creating a mesmerizing wave-like pattern that seems to dance across the surface. In shades of pink, blue, and purple, these forms swirl together in a joyous celebration of color and movement, imbuing the design with an infectious energy. Meanwhile, the text \"Join my community\" leaps out at us from the top of the poster, its simple yet impactful phrase rendered in crisp white letters that gleam like beacons against the dark background. Below this declaration, a smaller, yet no less insistent echo repeats itself: \"JOIN MY COMMUNITY\", this time in a font that's slightly more subdued, yet no less urgent in its invitation to join the Potreon community. The overall effect is one of modernity and dynamism, as if the very essence of the event has been distilled into a visual representation that's at once eye-catching and inclusive."
+      ]
+    },
+    {
+      "id": 11,
+      "type": "DualCLIPLoader",
+      "pos": {
+        "0": 21,
+        "1": 239
+      },
+      "size": {
+        "0": 315,
+        "1": 106
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            10,
+            49
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DualCLIPLoader"
+      },
+      "widgets_values": [
+        "t5xxl_fp8_e4m3fn.safetensors",
+        "clip_l.safetensors",
+        "flux"
+      ]
+    },
+    {
+      "id": 26,
+      "type": "UnetLoaderGGUF",
+      "pos": {
+        "0": 29,
+        "1": 104
+      },
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            52
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UnetLoaderGGUF"
+      },
+      "widgets_values": [
+        "flux1-dev-Q8_0.gguf"
+      ]
+    },
+    {
+      "id": 37,
+      "type": "ControlNetLoader",
+      "pos": {
+        "0": 375,
+        "1": 710
+      },
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "CONTROL_NET",
+          "type": "CONTROL_NET",
+          "links": [
+            53
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ControlNetLoader"
+      },
+      "widgets_values": [
+        "FLUX.1/InstantX-FLUX1-Dev-Union/diffusion_pytorch_model.safetensors"
+      ]
+    },
+    {
+      "id": 31,
+      "type": "ControlNetApplyAdvanced",
+      "pos": {
+        "0": 990,
+        "1": 610
+      },
+      "size": {
+        "0": 315,
+        "1": 186
+      },
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 58
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 59
+        },
+        {
+          "name": "control_net",
+          "type": "CONTROL_NET",
+          "link": 53
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 56
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 55,
+          "shape": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            60
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": [
+            61
+          ],
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ControlNetApplyAdvanced"
+      },
+      "widgets_values": [
+        0.5678,
+        0,
+        0.9853333740234367
+      ]
+    },
+    {
+      "id": 29,
+      "type": "EmptySD3LatentImage",
+      "pos": {
+        "0": 990,
+        "1": 286
+      },
+      "size": {
+        "0": 315,
+        "1": 106
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            44
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "EmptySD3LatentImage"
+      },
+      "widgets_values": [
+        800,
+        400,
+        1
+      ],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 10,
+      "type": "VAELoader",
+      "pos": {
+        "0": 1420,
+        "1": 519
+      },
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            12
+          ],
+          "slot_index": 0,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "flux1DevVAE_safetensors.safetensors"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "VAEDecode",
+      "pos": {
+        "0": 1880,
+        "1": 195
+      },
+      "size": {
+        "0": 210,
+        "1": 46
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 46
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            50
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAEDecode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 9,
+      "type": "SaveImage",
+      "pos": {
+        "0": 2580,
+        "1": 195
+      },
+      "size": [
+        996.0494691933204,
+        1137.3472678244475
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 51
+        }
+      ],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 33,
+      "type": "AuraSR.AuraSRUpscaler",
+      "pos": {
+        "0": 2210,
+        "1": 195
+      },
+      "size": {
+        "0": 315,
+        "1": 198
+      },
+      "flags": {},
+      "order": 12,
+      "mode": 4,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 50
+        },
+        {
+          "name": "transparency_mask",
+          "type": "MASK",
+          "link": null,
+          "shape": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            51
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AuraSR.AuraSRUpscaler"
+      },
+      "widgets_values": [
+        "model.ckpt",
+        "4x",
+        true,
+        8,
+        "default",
+        true
+      ]
+    },
+    {
+      "id": 41,
+      "type": "LoadImage",
+      "pos": {
+        "0": 1443,
+        "1": 669
+      },
+      "size": [
+        818.1068548467865,
+        681.0883225389623
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            56
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "DALL·E 2024-10-08 04.12.19 - A modern Patreon banner designed for 'Limbicnation Art and ComfyUI _ ML _ AI tutorials'. The background features a sleek gradient of magenta, purple, .webp",
+        "image"
+      ]
+    }
+  ],
+  "links": [
+    [
+      10,
+      11,
+      0,
+      6,
+      0,
+      "CLIP"
+    ],
+    [
+      12,
+      10,
+      0,
+      8,
+      1,
+      "VAE"
+    ],
+    [
+      44,
+      29,
+      0,
+      27,
+      3,
+      "LATENT"
+    ],
+    [
+      46,
+      27,
+      0,
+      8,
+      0,
+      "LATENT"
+    ],
+    [
+      49,
+      11,
+      0,
+      34,
+      0,
+      "CLIP"
+    ],
+    [
+      50,
+      8,
+      0,
+      33,
+      0,
+      "IMAGE"
+    ],
+    [
+      51,
+      33,
+      0,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      52,
+      26,
+      0,
+      27,
+      0,
+      "MODEL"
+    ],
+    [
+      53,
+      37,
+      0,
+      31,
+      2,
+      "CONTROL_NET"
+    ],
+    [
+      55,
+      39,
+      0,
+      31,
+      4,
+      "VAE"
+    ],
+    [
+      56,
+      41,
+      0,
+      31,
+      3,
+      "IMAGE"
+    ],
+    [
+      58,
+      6,
+      0,
+      31,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      59,
+      34,
+      0,
+      31,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      60,
+      31,
+      0,
+      27,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      61,
+      31,
+      1,
+      27,
+      2,
+      "CONDITIONING"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.7513148009015781,
+      "offset": [
+        -40.48760254624544,
+        26.15623801202574
+      ]
+    }
+  },
+  "version": 0.4
+}
