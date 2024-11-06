@@ -91,12 +91,13 @@ Below are examples of the image processing workflow, showcasing the transition f
   </tr>
 </table>
 
-### [Flux Character Creator V3](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/Flux_Character_Creator_V3.png)
+### [Portrait Flux Face Enhanced](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/Portrait-Flux-FaceEnhanced-v6.json)
+
+### Portrait Flux Face Enhanced
 
 <table>
   <tr>
-    <td><img src="images/20240817_FluxCCV3_v1.jpg" alt="Flux Character Creator V3" width="512"></td>
-    <td><img src="images/Flux_Character_Creator_V3.jpg" alt="Flux Character Creator V3 Workflow" width="512"></td>
+    <td><img src="images/Portrait-Flux-FaceEnhanced-v6.jpg" alt="Portrait Flux Face Enhanced V6" width="512"></td>
+    <td><img src="images/Portrait-Flux-FaceEnhanced.jpg" alt="Portrait Flux Face Enhanced" width="512"></td>
   </tr>
 </table>
-
