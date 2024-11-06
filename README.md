@@ -93,8 +93,6 @@ Below are examples of the image processing workflow, showcasing the transition f
 
 ### [Portrait Flux Face Enhanced](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/Portrait-Flux-FaceEnhanced-v6.json)
 
-### Portrait Flux Face Enhanced
-
 <table>
   <tr>
     <td><img src="images/Portrait-Flux-FaceEnhanced.jpg" alt="Portrait Flux Face Enhanced" width="512"></td>
