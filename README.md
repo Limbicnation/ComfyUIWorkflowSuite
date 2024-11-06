@@ -97,7 +97,7 @@ Below are examples of the image processing workflow, showcasing the transition f
 
 <table>
   <tr>
-    <td><img src="images/Portrait-Flux-FaceEnhanced-v6.jpg" alt="Portrait Flux Face Enhanced V6" width="512"></td>
     <td><img src="images/Portrait-Flux-FaceEnhanced.jpg" alt="Portrait Flux Face Enhanced" width="512"></td>
+    <td><img src="images/Portrait-Flux-FaceEnhanced-v6.jpg" alt="Portrait Flux Face Enhanced V6" width="512"></td>
   </tr>
 </table>
