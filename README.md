@@ -99,3 +99,11 @@ Below are examples of the image processing workflow, showcasing the transition f
     <td><img src="images/Portrait-Flux-FaceEnhanced-v6.jpg" alt="Portrait Flux Face Enhanced V6" width="512"></td>
   </tr>
 </table>
+
+### [Hunyuan Video Lora](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/HY_Hunyuan_V2_Lora_Interp.png)
+<table>
+  <tr>
+    <td><img src="images/HY_Hunyuan_V2_Lora_Interp.png" alt="Hunyuan Video Workflow" width="512"></td>
+    <td><img src="images/HY_Hunyuan_V9_00001_thumbnail.png" alt="Hunyuan Video Example" width="512"></td>
+  </tr>
+</table>
