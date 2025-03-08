@@ -107,3 +107,11 @@ Below are examples of the image processing workflow, showcasing the transition f
     <td><img src="images/Fluix_Redux_Cyberpunk_NeoCore_V5_resized.jpg" alt="Redux Janus Example" width="512"></td>
   </tr>
 </table>
+
+### [Character PixelArt SDXL GameReady 16bit](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/Character_PixelArt_SDXL_GameReady_16bit_V1.png)
+<table>
+  <tr>
+    <td><img src="images/pixel_character_collage.png" alt="Pixel Character Collage" width="512"></td>
+    <td><img src="workflows/Character_PixelArt_SDXL_GameReady_16bit_V1.png" alt="PixelArt SDXL Workflow" width="512"></td>
+  </tr>
+</table>
