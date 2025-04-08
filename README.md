@@ -115,3 +115,19 @@ Below are examples of the image processing workflow, showcasing the transition f
     <td><img src="workflows/Character_PixelArt_SDXL_GameReady_16bit_V1.png" alt="PixelArt SDXL Workflow" width="512"></td>
   </tr>
 </table>
+
+### [ComfyUI Wan2.1 DepthMap Workflow](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/ComfyUI_Wan2-1_DepthMap_Workflow.png)
+<table>
+  <tr>
+    <td><img src="images/ComfyUI_Wan2-1_DepthMap/I2VWan_Preview.gif" alt="I2VWan Preview Animation" width="512"></td>
+    <td><img src="images/ComfyUI_Wan2-1_DepthMap/I2VWan_Preview_depth.jpg" alt="I2VWan Preview Depth" width="512"></td>
+  </tr>
+</table>
+
+### [SD3 Depth ControlNet Workflow](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/SD3_Depth_ControlNet_Workflow.png)
+<table>
+  <tr>
+    <td><img src="images/ComfyUI_Wan2-1_DepthMap/SD3_Depth_ControlNet_Workflow.jpg" alt="SD3 Depth ControlNet" width="512"></td>
+    <td><img src="images/ComfyUI_Wan2-1_DepthMap/ComfyUI_Wan2-1_DepthMap_Workflow.jpg" alt="ComfyUI Wan2.1 DepthMap Workflow" width="512"></td>
+  </tr>
+</table>
