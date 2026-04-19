@@ -91,6 +91,15 @@ Below are examples of the image processing workflow, showcasing the transition f
   </tr>
 </table>
 
+### [FLUX.2 Klein 9B KV Image Edit](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/image_flux2_klein_9b_kv_image_edit_fixed.json)
+
+<table>
+  <tr>
+    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/resized_flux2_klein_9b_kv_00007.png" alt="FLUX.2 Klein 9B KV Image Edit" width="512"></td>
+    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/resized_flux2_klein_9b_kv_00007.png" alt="FLUX.2 Klein 9B KV Output" width="512"></td>
+  </tr>
+</table>
+
 ### [Portrait Flux Face Enhanced](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/Portrait-Flux-FaceEnhanced-v6.json)
 
 <table>
