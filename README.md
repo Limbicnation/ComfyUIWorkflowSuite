@@ -125,6 +125,15 @@ Below are examples of the image processing workflow, showcasing the transition f
   </tr>
 </table>
 
+### [Reptilian Upscale 4x V3 FLUX2 Fixed](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/reptilian_upscale_4x_v3_flux2_fixed.json)
+
+<table>
+  <tr>
+    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/images/resized_reptilian_upscale_4x_v3_flux2_fixed_output.png" alt="Reptilian Upscale Output" width="512"></td>
+    <td><img src="https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/reptilian_upscale_4x_v3_flux2_fixed.png" alt="Reptilian Upscale Workflow" width="512"></td>
+  </tr>
+</table>
+
 ### [ComfyUI Wan2.1 DepthMap Workflow](https://github.com/Limbicnation/ComfyUIWorkflowSuite/blob/main/workflows/ComfyUI_Wan2-1_DepthMap_Workflow.png)
 <table>
   <tr>
